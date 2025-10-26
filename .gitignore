@@ -1,0 +1,78 @@
+# =========================================
+# IntelliJ IDEA / JetBrains IDEs
+# =========================================
+.idea/
+*.iml
+out/
+*.ipr
+*.iws
+
+# Optional (keep only shared settings)
+# Uncomment below if you DO want shared code style rules
+# .idea/codeStyles/
+# .idea/inspectionProfiles/
+
+# =========================================
+# Java / Maven / Gradle
+# =========================================
+target/
+build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven local repository (if accidentally added)
+.mvn/
+.mvnw
+.mvnw.cmd
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Gradle
+.gradle/
+gradle-app.setting
+gradle.properties
+gradlew
+gradlew.bat
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# =========================================
+# Logs & Temp
+# =========================================
+*.log
+logs/
+*.tmp
+tmp/
+*.bak
+
+# =========================================
+# OS-specific files
+# =========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================================
+# Environment & Config
+# =========================================
+.env
+*.local
+*.env.*
+
+# =========================================
+# Other Tools
+# =========================================
+# VSCode
+.vscode/
+.history/
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
