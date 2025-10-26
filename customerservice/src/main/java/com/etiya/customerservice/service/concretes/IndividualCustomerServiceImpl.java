@@ -96,10 +96,11 @@ public class IndividualCustomerServiceImpl implements IndividualCustomerService 
                         saved.getFirstName(),
                         saved.getLastName(),
                         saved.getNationalId(),
+                        saved.getDateOfBirth().toString(),
                         saved.getMotherName(),
                         saved.getFatherName(),
-                        saved.getGender(),
-                        saved.getDateOfBirth().toString());
+                        saved.getGender());
+
 
         updateCustomerProducer.produceCustomerUpdated(event); // Producer sınıfında kafka topic ile iletişim kuran metoda yolla
 
