@@ -2,6 +2,8 @@ package com.etiya.customerservice.service.concretes;
 
 import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.etiya.common.events.CreateCustomerEvent;
+import com.etiya.common.events.DeleteCustomerEvent;
+import com.etiya.common.events.SoftDeleteCustomerEvent;
 import com.etiya.common.events.UpdateCustomerEvent;
 import com.etiya.customerservice.domain.entities.IndividualCustomer;
 import com.etiya.customerservice.repository.IndividualCustomerRepository;
@@ -12,10 +14,13 @@ import com.etiya.customerservice.service.requests.individualCustomer.UpdateIndiv
 import com.etiya.customerservice.service.responses.individualCustomer.*;
 import com.etiya.customerservice.service.rules.IndividualCustomerBusinessRules;
 import com.etiya.customerservice.transport.kafka.producer.customer.CreateCustomerProducer;
+import com.etiya.customerservice.transport.kafka.producer.customer.DeleteCustomerProducer;
+import com.etiya.customerservice.transport.kafka.producer.customer.SoftDeleteCustomerProducer;
 import com.etiya.customerservice.transport.kafka.producer.customer.UpdateCustomerProducer;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +35,16 @@ public class IndividualCustomerServiceImpl implements IndividualCustomerService 
     private final CreateCustomerProducer createCustomerProducer;
     private final UpdateCustomerProducer updateCustomerProducer;
 
-    public IndividualCustomerServiceImpl(IndividualCustomerRepository individualCustomerRepository, IndividualCustomerBusinessRules individualCustomerBusinessRules, CreateCustomerProducer createCustomerProducer, UpdateCustomerProducer updateCustomerProducer) {
+    private final DeleteCustomerProducer deleteCustomerProducer;
+    private final SoftDeleteCustomerProducer softDeleteCustomerProducer;
+
+    public IndividualCustomerServiceImpl(IndividualCustomerRepository individualCustomerRepository, IndividualCustomerBusinessRules individualCustomerBusinessRules, CreateCustomerProducer createCustomerProducer, UpdateCustomerProducer updateCustomerProducer, DeleteCustomerProducer deleteCustomerProducer, SoftDeleteCustomerProducer softDeleteCustomerProducer) {
         this.individualCustomerRepository = individualCustomerRepository;
         this.individualCustomerBusinessRules =  individualCustomerBusinessRules;
         this.createCustomerProducer = createCustomerProducer;
         this.updateCustomerProducer = updateCustomerProducer;
+        this.deleteCustomerProducer = deleteCustomerProducer;
+        this.softDeleteCustomerProducer = softDeleteCustomerProducer;
     }
 
     @Override
@@ -148,6 +158,35 @@ public class IndividualCustomerServiceImpl implements IndividualCustomerService 
         IndividualCustomer individualCustomer = individualCustomerRepository.findById(id).get();
         GetIndividualCustomerResponse response = IndividualCustomerMapper.INSTANCE.getIndividualCustomerResponseFromIndividualCustomer(individualCustomer);
         return response;
+    }
+
+    @Override
+    public void delete(UUID id) {
+        individualCustomerBusinessRules.checkIfCustomerId(id);
+        // !! ÖNEMLİ: Müşteriyi silmeden önce ilişkili başka veriler varsa (aktif fatura hesabı)
+        // bunlarla ilgili business rule'lar eklenmelidir. Şimdilik sadece ID kontrolü yapıyorum.
+        IndividualCustomer customerToDelete = individualCustomerRepository.findById(id).get();
+
+        DeleteCustomerEvent event = new DeleteCustomerEvent(id.toString());
+        deleteCustomerProducer.produceCustomerDeleted(event); // Event'i gönder
+
+        individualCustomerRepository.delete(customerToDelete);
+    }
+
+    @Override
+    public void softDelete(UUID id) {
+        individualCustomerBusinessRules.checkIfCustomerId(id); // Müşteri var mı kontrolü
+
+        IndividualCustomer customerToSoftDelete = individualCustomerRepository.findById(id).get();
+
+        customerToSoftDelete.setDeletedDate(LocalDateTime.now()); // Silinme tarihini set et
+        IndividualCustomer savedCustomer = individualCustomerRepository.save(customerToSoftDelete); // Kaydet
+
+        SoftDeleteCustomerEvent event = new SoftDeleteCustomerEvent(
+                savedCustomer.getId().toString(),
+                savedCustomer.getDeletedDate().toString()
+        );
+        softDeleteCustomerProducer.produceCustomerSoftDeleted(event); // Event'i gönder
     }
 
 

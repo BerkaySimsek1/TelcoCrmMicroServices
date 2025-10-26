@@ -71,4 +71,16 @@ public class IndividualCustomerController {
     public GetIndividualCustomerResponse getById(@PathVariable UUID id) {
         return  individualCustomerService.getById(id);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable UUID id) {
+        individualCustomerService.delete(id);
+    }
+
+    @DeleteMapping("/{id}/soft")
+    @ResponseStatus(HttpStatus.OK)
+    public void softDelete(@PathVariable UUID id) {
+        individualCustomerService.softDelete(id);
+    }
 }

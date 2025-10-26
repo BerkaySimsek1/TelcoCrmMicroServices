@@ -23,4 +23,8 @@ public interface IndividualCustomerService {
     List<GetListIndividualCustomerResponse> getByCustomerNumberPattern(String pattern);
 
     GetIndividualCustomerResponse getById(UUID id);
+
+    // Yeni metotlar
+    void delete(UUID id);
+    void softDelete(UUID id);
 }

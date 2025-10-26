@@ -11,11 +11,24 @@ import java.util.List;
 public interface CustomerSearchRepository extends ElasticsearchRepository<CustomerSearch,String> {
     @Query("""
       {
-        "query_string": {
-          "query": "?0",
-          "analyze_wildcard": true,
-          "lenient": true,
-          "default_operator": "AND"
+        "bool": {
+          "must": [
+            {
+              "query_string": {
+                "query": "?0",
+                "analyze_wildcard": true,
+                "lenient": true,
+                "default_operator": "AND"
+              }
+            }
+          ],
+          "must_not": [
+            {
+              "exists": {
+                "field": "deletedDate"
+              }
+            }
+          ]
         }
       }
       """)
@@ -24,8 +37,21 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
 
     @Query("""
         {
-          "match": {
-            "firstName": "?0"
+          "bool": {
+            "must": [
+              {
+                "match": {
+                  "firstName": "?0"
+                }
+              }
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
+            ]
           }
         }
     """)
@@ -34,8 +60,21 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
 
     @Query("""
         {
-          "term": {
-            "nationalId": "?0"
+          "bool": {
+            "must": [
+              {
+                "term": {
+                  "nationalId": "?0"
+                }
+              }
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
+            ]
           }
         }
     """)
@@ -44,11 +83,24 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
 
     @Query("""
         {
-          "fuzzy": {
-            "firstName": {
-              "value": "?0",
-              "fuzziness": 2
-            }
+          "bool": {
+            "must": [
+              {
+                "fuzzy": {
+                  "firstName": {
+                    "value": "?0",
+                    "fuzziness": 2
+                  }
+                }
+              }
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
+            ]
           }
         }
     """)
@@ -57,11 +109,24 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
 
     @Query("""
         {
-          "range": {
-            "dateOfBirth": {
-              "gte": "?0",
-              "lte": "?1"
-            }
+          "bool": {
+            "must": [
+              {
+                "range": {
+                  "dateOfBirth": {
+                    "gte": "?0",
+                    "lte": "?1"
+                  }
+                }
+              }
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
+            ]
           }
         }
     """)
@@ -74,6 +139,13 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
             "must": [
               { "match": { "addresses.cityName": "?0" }},
               { "term": { "lastName.keyword": "?1" }}
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
             ]
           }
         }
@@ -83,8 +155,21 @@ public interface CustomerSearchRepository extends ElasticsearchRepository<Custom
 
     @Query("""
         {
-          "prefix": {
-            "firstName": "?0"
+          "bool": {
+            "must": [
+              {
+                "prefix": {
+                  "firstName": "?0"
+                }
+              }
+            ],
+            "must_not": [
+              {
+                "exists": {
+                  "field": "deletedDate"
+                }
+              }
+            ]
           }
         }
     """)

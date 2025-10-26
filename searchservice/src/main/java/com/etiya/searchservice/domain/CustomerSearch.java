@@ -28,6 +28,8 @@ public class CustomerSearch {
     private String motherName;
     private String fatherName;
     private String gender;
+    //private String updatedDate;
+    private String deletedDate;
 
     public CustomerSearch(String id, String customerNumber, String firstName, String lastName, String nationalId, String dateOfBirth, String motherName, String fatherName, String gender) {
         this.id = id;
@@ -39,6 +41,7 @@ public class CustomerSearch {
         this.motherName = motherName;
         this.fatherName = fatherName;
         this.gender = gender;
+        this.deletedDate = null;
     }
 
     @Field(type = FieldType.Nested)

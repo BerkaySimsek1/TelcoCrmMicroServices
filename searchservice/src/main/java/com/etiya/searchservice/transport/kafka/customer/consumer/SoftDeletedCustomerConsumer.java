@@ -1,6 +1,6 @@
 package com.etiya.searchservice.transport.kafka.customer.consumer;
 
-import com.etiya.common.events.UpdateCustomerEvent;
+import com.etiya.common.events.SoftDeleteCustomerEvent;
 import com.etiya.searchservice.service.CustomerSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +10,19 @@ import org.springframework.context.annotation.Configuration;
 import java.util.function.Consumer;
 
 @Configuration
-public class UpdatedCustomerConsumer {
+public class SoftDeletedCustomerConsumer {
     private final CustomerSearchService customerSearchService;
-    private final Logger LOGGER = LoggerFactory.getLogger(UpdatedCustomerConsumer.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SoftDeletedCustomerConsumer.class);
 
-    public UpdatedCustomerConsumer(CustomerSearchService customerSearchService) {
+    public SoftDeletedCustomerConsumer(CustomerSearchService customerSearchService) {
         this.customerSearchService = customerSearchService;
     }
+
     @Bean
-    public Consumer<UpdateCustomerEvent> customerUpdated() {
+    public Consumer<SoftDeleteCustomerEvent> customerSoftDeleted() {
         return event -> {
-            LOGGER.info("Received UpdateCustomerEvent: {}", event);
-            customerSearchService.updateCustomer(event);
+            LOGGER.info("Received SoftDeleteCustomerEvent: {}", event);
+            customerSearchService.softDelete(event.customerId(), event.deletedDate());
         };
     }
 }

@@ -31,6 +31,7 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
     @Override
     public List<CustomerSearch> findAll() {
         return StreamSupport.stream(customerSearchRepository.findAll().spliterator(), false)
+                .filter(customer -> customer.getDeletedDate() == null)
                 .map(this::filterDeletedAddresses)
                 .collect(Collectors.toList());
 
@@ -38,7 +39,6 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     @Override
     public void delete(String id) {
-
         customerSearchRepository.deleteById(id);
 
     }
@@ -58,9 +58,6 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
                     customerSearch.setDateOfBirth(event.dateOfBirth());
                     customerSearch.setCustomerNumber(event.customerNumber());
                     customerSearch.setNationalId(event.nationalId());
-
-                    // event'te varsa ve güncellenmesi gerekiyorsa buraya eklenebilir.
-
                     // Güncellenmiş müşteri dökümanını Elasticsearch'e kaydeder
                     customerSearchRepository.save(customerSearch);
                     // Loglama eklenebilir:
@@ -69,9 +66,16 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
                 () -> {
                     // Müşteri bulunamazsa loglama veya başka bir işlem yapılabilir
 
-
                 }
         );
+
+    }
+
+    @Override
+    public void softDelete(String id, String deletedDate) {
+        var cs = customerSearchRepository.findById(id).orElseThrow();
+        cs.setDeletedDate(deletedDate);
+        customerSearchRepository.save(cs);
 
     }
 
