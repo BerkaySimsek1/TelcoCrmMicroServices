@@ -7,9 +7,7 @@ import com.etiya.customerservice.service.responses.address.CreatedAddressRespons
 import com.etiya.customerservice.service.responses.address.GetAddressResponse;
 import com.etiya.customerservice.service.responses.address.GetListAddressResponse;
 import com.etiya.customerservice.service.responses.address.UpdatedAddressResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.repository.query.Param;
 
@@ -34,6 +32,8 @@ public interface AddressMapper {
 
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "district", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Address addressFromUpdateAddressRequest(UpdateAddressRequest request, @MappingTarget Address address);
 
     @Mapping(target = "customerId", source = "customer.id")

@@ -78,10 +78,10 @@ public class AddressController {
         return addressService.findByStreetContaining(streetPart);
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UpdatedAddressResponse update(@Valid @RequestBody UpdateAddressRequest request) {
-        return addressService.update(request);
+    public UpdatedAddressResponse update(@PathVariable int id,@Valid @RequestBody UpdateAddressRequest request) {
+        return addressService.update(id,request);
     }
     @GetMapping("findByCustomerId/{customerId}")
     @ResponseStatus(HttpStatus.OK)

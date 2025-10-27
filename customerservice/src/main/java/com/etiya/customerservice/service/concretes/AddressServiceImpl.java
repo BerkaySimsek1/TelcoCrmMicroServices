@@ -87,30 +87,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public UpdatedAddressResponse update(UpdateAddressRequest request) {
-        Address address = addressRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("Address not found"));
-        Address mappedAddress = AddressMapper.INSTANCE.addressFromUpdateAddressRequest(request, address);
-        Address updatedAddress = addressRepository.save(mappedAddress);
-
-        UpdateAddressEvent event  = new UpdateAddressEvent(
-                updatedAddress.getCustomer().getId().toString(),
-                updatedAddress.getId(),
-                updatedAddress.getStreet(),
-                updatedAddress.getHouseNumber(),
-                updatedAddress.getDescription(),
-                updatedAddress.isDefault(),
-                updatedAddress.getDistrict().getId(),
-                updatedAddress.getDistrict().getName(),
-                updatedAddress.getDistrict().getCity().getId(),
-                updatedAddress.getDistrict().getCity().getName(),
-                updatedAddress.getCreatedDate().toString(),
-                updatedAddress.getUpdatedDate().toString()
-        );
-
-        updateAddressProducer.produceCustomerUpdated(event);
-
-        UpdatedAddressResponse response = AddressMapper.INSTANCE.updatedAddressResponseFromAddress(updatedAddress);
-        return response;
+    public UpdatedAddressResponse update(int id,UpdateAddressRequest request) {
+        Address existingAddress = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
+        AddressMapper.INSTANCE.addressFromUpdateAddressRequest(request, existingAddress);
+        Address saved= addressRepository.save(existingAddress);
+        return AddressMapper.INSTANCE.updatedAddressResponseFromAddress(saved);
     }
 
     @Override
