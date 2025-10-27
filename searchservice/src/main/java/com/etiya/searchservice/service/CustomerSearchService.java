@@ -12,6 +12,7 @@ public interface CustomerSearchService {
     List<CustomerSearch> findAll();
     void delete(String id);
     void updateCustomer(UpdateCustomerEvent event);
+    void softDelete(String id, String deletedDate);
 
     List<CustomerSearch> searchAllFields(String name);
     List<CustomerSearch> findByFirstName(String firstName);
