@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface AddressService {
     CreatedAddressResponse add(CreateAddressRequest CreateAddressRequest);
     List<GetListAddressResponse> getList();
-    UpdatedAddressResponse update(UpdateAddressRequest UpdateAddressRequest);
+    UpdatedAddressResponse update(int id,UpdateAddressRequest UpdateAddressRequest);
     GetAddressResponse getById(int id);
     List<GetListAddressResponse> findDefaultAddresses();
 
