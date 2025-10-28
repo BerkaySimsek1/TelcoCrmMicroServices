@@ -2,6 +2,7 @@ package com.etiya.searchservice.service;
 
 import com.etiya.common.events.UpdateCustomerEvent;
 import com.etiya.searchservice.domain.Address;
+import com.etiya.searchservice.domain.BillingAccount;
 import com.etiya.searchservice.domain.ContactMedium;
 import com.etiya.searchservice.domain.CustomerSearch;
 
@@ -32,4 +33,11 @@ public interface CustomerSearchService {
     void addContactMedium(String customerId, ContactMedium contact);
     void updateContactMedium(String customerId, ContactMedium contact);
     void deleteContactMedium(String customerId, int contactId);
+    void softDeleteContactMedium(String customerId, int id, String deletedDate);
+
+    // BillingAccount ops
+    void addBillingAccount(String customerId, BillingAccount billingAccount);
+    void updateBillingAccount(String customerId, BillingAccount billingAccount);
+    void deleteBillingAccount(String customerId, int billingAccountId);
+    void softDeleteBillingAccount(String customerId, int id, String deletedDate);
 }

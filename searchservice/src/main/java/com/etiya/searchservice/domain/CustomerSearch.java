@@ -50,4 +50,7 @@ public class CustomerSearch {
     @Field(type = FieldType.Nested)
     private List<ContactMedium> contactMediums = new ArrayList<>();
 
+    @Field(type = FieldType.Nested)
+    private List<BillingAccount> billingAccounts = new ArrayList<>();
+
 }

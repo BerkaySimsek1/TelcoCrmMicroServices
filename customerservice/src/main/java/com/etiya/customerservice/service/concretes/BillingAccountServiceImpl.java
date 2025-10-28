@@ -1,5 +1,9 @@
 package com.etiya.customerservice.service.concretes;
 
+import com.etiya.common.events.CreateBillingAccountEvent;
+import com.etiya.common.events.DeleteBillingAccountEvent;
+import com.etiya.common.events.SoftDeleteBillingAccountEvent;
+import com.etiya.common.events.UpdateBillingAccountEvent;
 import com.etiya.customerservice.domain.entities.Address;
 import com.etiya.customerservice.domain.entities.BillingAccount;
 import com.etiya.customerservice.repository.BillingAccountRepository;
@@ -12,6 +16,10 @@ import com.etiya.customerservice.service.responses.billingAccount.GetBillingAcco
 import com.etiya.customerservice.service.responses.billingAccount.GetListBillingAccountResponse;
 import com.etiya.customerservice.service.responses.billingAccount.UpdatedBillingAccountResponse;
 import com.etiya.customerservice.service.rules.BillingAccountBusinessRules;
+import com.etiya.customerservice.transport.kafka.producer.customer.CreateBillingAccountProducer;
+import com.etiya.customerservice.transport.kafka.producer.customer.DeleteBillingAccountProducer;
+import com.etiya.customerservice.transport.kafka.producer.customer.SoftDeleteBillingAccountProducer;
+import com.etiya.customerservice.transport.kafka.producer.customer.UpdateBillingAccountProducer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,10 +31,18 @@ public class BillingAccountServiceImpl implements BillingAccountService {
 
     public final BillingAccountRepository billingAccountRepository;
     public final BillingAccountBusinessRules billingAccountBusinessRules;
+    public final CreateBillingAccountProducer createBillingAccountProducer;
+    public final UpdateBillingAccountProducer updateBillingAccountProducer;
+    public final DeleteBillingAccountProducer deleteBillingAccountProducer;
+    public final SoftDeleteBillingAccountProducer  softDeleteBillingAccountProducer;
 
-    public BillingAccountServiceImpl(BillingAccountRepository billingAccountRepository, BillingAccountBusinessRules billingAccountBusinessRules) {
+    public BillingAccountServiceImpl(BillingAccountRepository billingAccountRepository, BillingAccountBusinessRules billingAccountBusinessRules, CreateBillingAccountProducer createBillingAccountProducer, UpdateBillingAccountProducer updateBillingAccountProducer, DeleteBillingAccountProducer deleteBillingAccountProducer, SoftDeleteBillingAccountProducer softDeleteBillingAccountProducer) {
         this.billingAccountRepository = billingAccountRepository;
         this.billingAccountBusinessRules = billingAccountBusinessRules;
+        this.createBillingAccountProducer = createBillingAccountProducer;
+        this.updateBillingAccountProducer = updateBillingAccountProducer;
+        this.deleteBillingAccountProducer = deleteBillingAccountProducer;
+        this.softDeleteBillingAccountProducer = softDeleteBillingAccountProducer;
     }
 
     @Override
@@ -36,6 +52,18 @@ public class BillingAccountServiceImpl implements BillingAccountService {
         BillingAccount billingAccount = BillingAccountMapper.INSTANCE.billingAccountFromBillingAccountRequest(request);
 
         BillingAccount createdBillingAccount = billingAccountRepository.save(billingAccount);
+
+        CreateBillingAccountEvent event = new CreateBillingAccountEvent(
+                createdBillingAccount.getCustomer().getId().toString(),
+                createdBillingAccount.getAddress().getId(),
+                createdBillingAccount.getId(),
+                createdBillingAccount.getType(),
+                createdBillingAccount.getStatus(),
+                createdBillingAccount.getAccountNumber(),
+                createdBillingAccount.getAccountName()
+        );
+
+        createBillingAccountProducer.produceBillingAccountCreated(event);
 
         CreatedBillingAccountResponse response = BillingAccountMapper.INSTANCE.createdBillingAccountFromBillingAccount(createdBillingAccount);
         return response;
@@ -90,6 +118,19 @@ public class BillingAccountServiceImpl implements BillingAccountService {
         resp.setAddressId(saved.getAddress().getId());
         resp.setCityName(saved.getAddress().getDistrict().getCity().getName());
         resp.setDistrictName(saved.getAddress().getDistrict().getName());
+
+        UpdateBillingAccountEvent event = new UpdateBillingAccountEvent(
+                resp.getId(),
+                resp.getCustomerId().toString(),
+                resp.getAddressId(),
+                resp.getType(),
+                resp.getStatus(),
+                resp.getAccountNumber(),
+                resp.getAccountName()
+        );
+
+        updateBillingAccountProducer.produceBillingAccountUpdated(event);
+
         return resp;
     }
 
@@ -97,6 +138,14 @@ public class BillingAccountServiceImpl implements BillingAccountService {
     @Override
     public void delete(int id) {
         BillingAccount billingAccount = billingAccountRepository.findById(id).orElseThrow(()-> new RuntimeException("Billing account not found"));
+
+        DeleteBillingAccountEvent event = new DeleteBillingAccountEvent(
+                billingAccount.getCustomer().getId().toString(),
+                id
+        );
+
+        deleteBillingAccountProducer.produceBillingAccountDeleted(event);
+
         billingAccountRepository.delete(billingAccount);
     }
 
@@ -105,7 +154,13 @@ public class BillingAccountServiceImpl implements BillingAccountService {
         billingAccountBusinessRules.checkStatusBeforeDelete(id);
         BillingAccount billingAccount = billingAccountRepository.findById(id).orElseThrow(()-> new RuntimeException("Billing account not found"));
         billingAccount.setDeletedDate(LocalDateTime.now());
-        billingAccountRepository.save(billingAccount);
+        BillingAccount savedBillingAccount = billingAccountRepository.save(billingAccount);
+        SoftDeleteBillingAccountEvent event = new SoftDeleteBillingAccountEvent(
+                savedBillingAccount.getCustomer().getId().toString(),
+                savedBillingAccount.getId(),
+                savedBillingAccount.getDeletedDate().toString()
+        );
+        softDeleteBillingAccountProducer.produceBillingAccountSoftDeleted(event);
     }
 
     @Override
