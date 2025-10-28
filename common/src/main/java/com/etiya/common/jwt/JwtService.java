@@ -17,8 +17,12 @@ public class JwtService {
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
+
+
     @Value("${jwt.expiration}")
     private long EXPIRATION;
+
+
 
     public String generateToken(String username, List<String> roles){
         Map<String,Object> claims = new HashMap<>();
@@ -62,6 +66,8 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+
 
 
 }
