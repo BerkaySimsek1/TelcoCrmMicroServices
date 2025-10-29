@@ -27,4 +27,6 @@ public interface IndividualCustomerService {
     // Yeni metotlar
     void delete(UUID id);
     void softDelete(UUID id);
+
+    boolean existsByNationalId(String nationalId);
 }

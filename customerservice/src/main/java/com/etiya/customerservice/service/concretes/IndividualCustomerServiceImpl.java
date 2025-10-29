@@ -189,5 +189,10 @@ public class IndividualCustomerServiceImpl implements IndividualCustomerService 
         softDeleteCustomerProducer.produceCustomerSoftDeleted(event); // Event'i gönder
     }
 
+    @Override
+    public boolean existsByNationalId(String nationalId) {
+        return individualCustomerRepository.existsByNationalId(nationalId);
+    }
+
 
 }
