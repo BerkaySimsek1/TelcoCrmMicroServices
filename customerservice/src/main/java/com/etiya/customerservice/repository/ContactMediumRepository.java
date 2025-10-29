@@ -22,8 +22,6 @@ public interface ContactMediumRepository extends JpaRepository<ContactMedium, In
     @Query("select count(c)>0 from Customer c where c.id = :customerId")
     boolean existsByCustomerId(UUID customerId);
 
-
-
     @Query(value = """
         SELECT EXISTS(
             SELECT 1 FROM customers c
@@ -33,5 +31,6 @@ public interface ContactMediumRepository extends JpaRepository<ContactMedium, In
         """, nativeQuery = true)
     boolean isCustomerActive(@Param("customerId") UUID customerId);
 
+    List<ContactMedium> findAllByCustomerId(UUID customerId);
 
 }

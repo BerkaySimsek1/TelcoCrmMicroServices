@@ -1,20 +1,19 @@
-package com.etiya.customerservice.service.requests.contactMedium;
+package com.etiya.customerservice.service.responses.contactMedium;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateContactMediumRequest {
+public class UpdatedContactMediumListResponse {
     private UUID customerId;
-    private String type;
-    private String value;
-    private Boolean isPrimary;
-
+    private List<UpdatedContactMediumResponse> updatedContactMediums;
 }
+
