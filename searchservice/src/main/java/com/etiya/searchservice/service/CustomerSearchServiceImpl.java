@@ -2,6 +2,7 @@ package com.etiya.searchservice.service;
 
 import com.etiya.common.events.UpdateCustomerEvent;
 import com.etiya.searchservice.domain.Address;
+import com.etiya.searchservice.domain.BillingAccount;
 import com.etiya.searchservice.domain.ContactMedium;
 import com.etiya.searchservice.domain.CustomerSearch;
 import com.etiya.searchservice.repository.CustomerSearchRepository;
@@ -177,6 +178,40 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
         cs.getContactMediums().removeIf(c -> c.getId() == contactId);
         customerSearchRepository.save(cs);
     }
+
+    @Override
+    public void softDeleteContactMedium(String customerId, int id, String deletedDate) {
+
+    }
+
+    @Override
+    public void addBillingAccount(String customerId, BillingAccount billingAccount) {
+        var cs = customerSearchRepository.findById(customerId).orElseThrow();
+        cs.getBillingAccounts().removeIf(c-> c.getId() == billingAccount.getId());
+        cs.getBillingAccounts().add(billingAccount);
+        customerSearchRepository.save(cs);
+    }
+
+    @Override
+    public void updateBillingAccount(String customerId, BillingAccount billingAccount) {
+        var cs = customerSearchRepository.findById(customerId).orElseThrow();
+        cs.getBillingAccounts().removeIf(c-> c.getId() == billingAccount.getId());
+        cs.getBillingAccounts().add(billingAccount);
+        customerSearchRepository.save(cs);
+    }
+
+    @Override
+    public void deleteBillingAccount(String customerId, int billingAccountId) {
+        var cs = customerSearchRepository.findById(customerId).orElseThrow();
+        cs.getBillingAccounts().removeIf(c-> c.getId() == billingAccountId);
+        customerSearchRepository.save(cs);
+    }
+
+    @Override
+    public void softDeleteBillingAccount(String customerId, int id, String deletedDate) {
+
+    }
+
     private CustomerSearch filterDeletedAddresses(CustomerSearch cs) {
         if (cs.getAddresses() != null) {
             cs.setAddresses(
