@@ -20,7 +20,14 @@ public class BaseSecurityService {
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "/api/auth/**"
+            "/api/auth/**",
+            "/api/individual-customers/**",
+            "/api/addresses/**",
+            "/api/billing-accounts/**",
+            "/api/cities/**",
+            "/api/contact-mediums/**",
+            "/api/districts/**",
+            "/api/customer-search/**"
     };
 
     public HttpSecurity configureCoreSecurity(HttpSecurity httpSecurity) throws Exception {

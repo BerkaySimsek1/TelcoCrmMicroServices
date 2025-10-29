@@ -17,7 +17,6 @@ import java.util.UUID;
 public class CreateBillingAccountRequest {
 
     @NotNull(message = Messages.BillingAccountCustomerIdNotNull)
-    @Positive(message = Messages.BillingAccountCustomerIdPositive)
     private UUID customerId;
 
     @NotNull(message = Messages.BillingAccountAddressIdNotNull)
