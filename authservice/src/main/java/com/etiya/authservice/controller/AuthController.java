@@ -2,6 +2,7 @@ package com.etiya.authservice.controller;
 
 import com.etiya.authservice.service.abstracts.AuthService;
 import com.etiya.authservice.service.dtos.LoginRequest;
+import com.etiya.authservice.service.dtos.LoginResponse;
 import com.etiya.authservice.service.dtos.RegisterUserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public String login(@RequestBody LoginRequest request){
+    public LoginResponse login(@RequestBody LoginRequest request){
         return authService.login(request);
     }
 }

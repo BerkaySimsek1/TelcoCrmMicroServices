@@ -3,6 +3,7 @@ package com.etiya.authservice.service.concretes;
 import com.etiya.authservice.service.abstracts.AuthService;
 import com.etiya.authservice.service.abstracts.UserService;
 import com.etiya.authservice.service.dtos.LoginRequest;
+import com.etiya.authservice.service.dtos.LoginResponse;
 import com.etiya.authservice.service.dtos.RegisterUserRequest;
 import com.etiya.common.jwt.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,12 +36,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate
                 (new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
         if(!authentication.isAuthenticated())
             throw new RuntimeException("E posta veya şifre hatalı"); //RuntimeEx türü AuthenticationEx olacak.
         UserDetails user = userService.loadUserByUsername(request.getEmail());
-        return jwtService.generateToken(user.getUsername(),user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+        String tokenString = jwtService.generateToken(user.getUsername(), user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(tokenString);
+        return loginResponse;
     }
 }
