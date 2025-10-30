@@ -33,7 +33,7 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
     public List<CustomerSearch> findAll() {
         return StreamSupport.stream(customerSearchRepository.findAll().spliterator(), false)
                 .filter(customer -> customer.getDeletedDate() == null)
-                .map(this::filterDeletedAddresses)
+//                .map(this::filterDeletedAddresses)
                 .collect(Collectors.toList());
 
     }
@@ -82,10 +82,10 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     @Override
     public List<CustomerSearch> searchAllFields(String name) {
-        return customerSearchRepository.searchAllFields(name)
-                .stream()
-                .map(this::filterDeletedAddresses)
-                .collect(Collectors.toList());
+        return customerSearchRepository.searchAllFields(name);
+//                .stream()
+//                .map(this::filterDeletedAddresses)
+//                .collect(Collectors.toList());
     }
 
     @Override
@@ -110,10 +110,10 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     @Override
     public List<CustomerSearch> findByCityAndLastName(String city, String lastName) {
-        return customerSearchRepository.findByCityAndLastName(city, lastName)
-                .stream()
-                .map(this::filterDeletedAddresses)
-                .collect(Collectors.toList());
+        return customerSearchRepository.findByCityAndLastName(city, lastName);
+//                .stream()
+//                .map(this::filterDeletedAddresses)
+//                .collect(Collectors.toList());
     }
 
     @Override
@@ -147,12 +147,12 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
     @Override
     public void softDeleteAddress(String customerId, int addressId, String updatedDate, String deletedDate) {
         var cs = customerSearchRepository.findById(customerId).orElseThrow();
-        cs.getAddresses().forEach(address -> {
-            if (address.getId() == addressId) {
-                address.setUpdatedDate(updatedDate);
-                address.setDeletedDate(deletedDate);
-            }
-        });
+//        cs.getAddresses().forEach(address -> {
+//            if (address.getId() == addressId) {
+//                address.setUpdatedDate(updatedDate);
+//                address.setDeletedDate(deletedDate);
+//            }
+//        });
         customerSearchRepository.save(cs);
     }
 
@@ -212,14 +212,14 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     }
 
-    private CustomerSearch filterDeletedAddresses(CustomerSearch cs) {
-        if (cs.getAddresses() != null) {
-            cs.setAddresses(
-                    cs.getAddresses().stream()
-                            .filter(a -> a.getDeletedDate() == null)
-                            .collect(Collectors.toList())
-            );
-        }
-        return cs;
-    }
+//    private CustomerSearch filterDeletedAddresses(CustomerSearch cs) {
+//        if (cs.getAddresses() != null) {
+//            cs.setAddresses(
+//                    cs.getAddresses().stream()
+//                            .filter(a -> a.getDeletedDate() == null)
+//                            .collect(Collectors.toList())
+//            );
+//        }
+//        return cs;
+//    }
 }

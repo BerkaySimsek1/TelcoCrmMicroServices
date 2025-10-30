@@ -28,7 +28,7 @@ public class CreatedAddressConsumer {
         return event -> {
             Address address = new Address(event.id(), event.street(), event.houseNumber(), event.description(),
                 event.isDefault(), event.districtId(), event.districtName(), event.cityId(), event.cityName()
-                    , event.createdDate(),null,null);
+                    );
             service.addAddress(event.customerId(), address);
             LOGGER.info(String.format("Sending address event to kafka: %s", event));
 
