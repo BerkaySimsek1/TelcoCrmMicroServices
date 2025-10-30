@@ -26,7 +26,7 @@ public class UpdatedAddressConsumer {
         return event -> {
             Address address = new Address(event.id(), event.street(), event.houseNumber(), event.description(),
                     event.isDefault(), event.districtId()
-                    , event.districtName(), event.cityId(), event.cityName(), event.createdDate(), event.updatedDate(), "");
+                    , event.districtName(), event.cityId(), event.cityName());
             service.updateAddress(event.customerId(), address);
             LOGGER.info(String.format("Sending UpdateAddressEvent to kafka: %s", event));
         };
