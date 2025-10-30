@@ -91,6 +91,19 @@ public class AddressServiceImpl implements AddressService {
         Address existingAddress = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
         AddressMapper.INSTANCE.addressFromUpdateAddressRequest(request, existingAddress);
         Address saved= addressRepository.save(existingAddress);
+        UpdateAddressEvent event  = new UpdateAddressEvent(
+                saved.getCustomer().getId().toString(),
+                saved.getId(),
+                saved.getStreet(),
+                saved.getHouseNumber(),
+                saved.getDescription(),
+                saved.isDefault(),
+                saved.getDistrict().getId(),
+                saved.getDistrict().getName(),
+                saved.getDistrict().getCity().getId(),
+                saved.getDistrict().getCity().getName()
+        );
+        updateAddressProducer.produceCustomerUpdated(event);
         return AddressMapper.INSTANCE.updatedAddressResponseFromAddress(saved);
     }
 

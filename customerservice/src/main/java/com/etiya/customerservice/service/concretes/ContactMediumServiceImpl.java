@@ -1,16 +1,14 @@
 package com.etiya.customerservice.service.concretes;
 
+import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.etiya.common.events.*;
 import com.etiya.customerservice.domain.entities.ContactMedium;
 import com.etiya.customerservice.repository.ContactMediumRepository;
 import com.etiya.customerservice.service.abstracts.ContactMediumService;
 import com.etiya.customerservice.service.mappings.ContactMediumMapper;
-import com.etiya.customerservice.service.requests.contactMedium.CreateContactMediumRequest;
-import com.etiya.customerservice.service.requests.contactMedium.UpdateContactMediumRequest;
-import com.etiya.customerservice.service.responses.contactMedium.CreatedContactMediumResponse;
-import com.etiya.customerservice.service.responses.contactMedium.GetContactMediumResponse;
-import com.etiya.customerservice.service.responses.contactMedium.GetListContactMediumResponse;
-import com.etiya.customerservice.service.responses.contactMedium.UpdatedContactMediumResponse;
+import com.etiya.customerservice.service.messages.Messages;
+import com.etiya.customerservice.service.requests.contactMedium.*;
+import com.etiya.customerservice.service.responses.contactMedium.*;
 import com.etiya.customerservice.service.rules.ContactMediumBusinessRules;
 import com.etiya.customerservice.transport.kafka.producer.customer.CreateContactMediumProducer;
 import com.etiya.customerservice.transport.kafka.producer.customer.DeleteContactMediumProducer;
@@ -19,7 +17,9 @@ import com.etiya.customerservice.transport.kafka.producer.customer.UpdateContact
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ContactMediumServiceImpl implements ContactMediumService {
@@ -62,6 +62,54 @@ public class ContactMediumServiceImpl implements ContactMediumService {
         CreatedContactMediumResponse createdContactMediumResponse = ContactMediumMapper.INSTANCE.createdContactMediumResponseFromContactMedium(createdContactMedium);
         return createdContactMediumResponse;
     }
+    @Override
+    public List<CreatedContactMediumResponse> addAsList(CreateContactMediumListRequest request) {
+        UUID customerId = request.getCustomerId();
+
+        // Business rules: müşteri aktif mi, mevcut mu
+        contactMediumBusinessRules.checkCustomerBeforeAdd(customerId);
+
+        // Liste kontrolü: email ve mobile_phone zorunlu
+        boolean hasEmail = request.getContactMediums().stream()
+                .anyMatch(m -> m.getType().equalsIgnoreCase("email"));
+        boolean hasMobilePhone = request.getContactMediums().stream()
+                .anyMatch(m -> m.getType().equalsIgnoreCase("mobile_phone"));
+
+        if (!hasEmail || !hasMobilePhone) {
+            throw new BusinessException("Both email and mobile_phone contact mediums are required.");
+        }
+
+        List<CreatedContactMediumResponse> responses = new ArrayList<>();
+
+        for (CreateContactMediumItem item : request.getContactMediums()) {
+            // isPrimary kontrolü (her bir item için)
+            contactMediumBusinessRules.checkPrimaryStatus(customerId, item.isPrimary());
+
+            // DTO’dan entity oluştur
+            CreateContactMediumRequest singleRequest = new CreateContactMediumRequest();
+            singleRequest.setCustomerId(customerId);
+            singleRequest.setType(item.getType());
+            singleRequest.setValue(item.getValue());
+            singleRequest.setPrimary(item.isPrimary());
+
+            ContactMedium contactMedium = ContactMediumMapper.INSTANCE.contactMediumFromContactMediumRequest(singleRequest);
+            ContactMedium created = contactMediumRepository.save(contactMedium);
+
+            // Event
+            CreateContactMediumEvent event = new CreateContactMediumEvent(
+                    created.getCustomer().getId().toString(),
+                    created.getId(),
+                    created.getType(),
+                    created.getValue(),
+                    created.isPrimary()
+            );
+            createContactMediumProducer.produceContactMediumCreated(event);
+
+            // Response
+            responses.add(ContactMediumMapper.INSTANCE.createdContactMediumResponseFromContactMedium(created));
+        }
+        return responses;
+    }
 
     @Override
     public List<GetListContactMediumResponse> getAll() {
@@ -78,41 +126,63 @@ public class ContactMediumServiceImpl implements ContactMediumService {
     }
 
     @Override
-    public UpdatedContactMediumResponse update(UpdateContactMediumRequest request) {
-        ContactMedium contactMedium = contactMediumRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("Contact Medium Not Found"));
+    public UpdatedContactMediumResponse update(int id, UpdateContactMediumRequest request) {
+        ContactMedium existingContactMedium = contactMediumRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contact Medium Not Found"));
 
-        if(request.getValue() != null) {
-            contactMedium.setValue(request.getValue());
-        }
-
-        if(request.getType() != null) {
-            contactMedium.setType(request.getType());
-        }
-
-        if(request.getIsPrimary() != null) {
-            contactMedium.setPrimary(request.getIsPrimary());
-        }
-
-        ContactMedium updatedContactMedium = contactMediumRepository.save(contactMedium);
+        ContactMediumMapper.INSTANCE.contactMediumFromUpdateRequest(request, existingContactMedium);
+        ContactMedium saved = contactMediumRepository.save(existingContactMedium);
 
         UpdateContactMediumEvent event = new UpdateContactMediumEvent(
-                updatedContactMedium.getCustomer().getId().toString(),
-                updatedContactMedium.getId(),
-                updatedContactMedium.getType(),
-                updatedContactMedium.getValue(),
-                updatedContactMedium.isPrimary()
+                saved.getCustomer().getId().toString(),
+                saved.getId(),
+                saved.getType(),
+                saved.getValue(),
+                saved.isPrimary()
         );
-
         updateContactMediumProducer.produceContactMediumUpdated(event);
+        return ContactMediumMapper.INSTANCE.updatedContactMediumResponseFromContactMedium(saved);
+    }
 
+    @Override
+    public UpdatedContactMediumListResponse updateAsList(UpdateContactMediumListRequest request) {
+        List<UpdatedContactMediumResponse> updatedList = new ArrayList<>();
 
-        UpdatedContactMediumResponse response = new UpdatedContactMediumResponse();
-        response.setId(updatedContactMedium.getId());
-        response.setCustomerId(updatedContactMedium.getCustomer().getId());
-        response.setType(updatedContactMedium.getType());
-        response.setValue(updatedContactMedium.getValue());
-        response.setIsPrimary(updatedContactMedium.isPrimary());
-        return response;
+        for (UpdateContactMediumItem item : request.getContactMediums()) {
+
+            ContactMedium existing = contactMediumRepository.findById(item.getId())
+                    .orElseThrow(() -> new RuntimeException("Contact Medium with ID " + item.getId() + " not found"));
+
+            // Eğer customerId uyuşmuyorsa hata fırlat (güvenlik için)
+            if (!existing.getCustomer().getId().equals(request.getCustomerId())) {
+                throw new RuntimeException("Customer ID mismatch for contact medium id " + item.getId());
+            }
+
+            // Mevcut mapper'ı kullanarak alanları güncelle
+            ContactMediumMapper.INSTANCE.contactMediumFromUpdateRequest(
+                    new UpdateContactMediumRequest(
+                            request.getCustomerId(),
+                            item.getType(),
+                            item.getValue(),
+                            item.isPrimary()
+                    ),
+                    existing
+            );
+            ContactMedium saved = contactMediumRepository.save(existing);
+
+            UpdateContactMediumEvent event = new UpdateContactMediumEvent(
+                    saved.getCustomer().getId().toString(),
+                    saved.getId(),
+                    saved.getType(),
+                    saved.getValue(),
+                    saved.isPrimary()
+            );
+            updateContactMediumProducer.produceContactMediumUpdated(event);
+
+            updatedList.add(ContactMediumMapper.INSTANCE.updatedContactMediumResponseFromContactMedium(saved));
+        }
+
+        return new UpdatedContactMediumListResponse(request.getCustomerId(), updatedList);
     }
 
     @Override
@@ -166,4 +236,10 @@ public class ContactMediumServiceImpl implements ContactMediumService {
         List<GetListContactMediumResponse> response = ContactMediumMapper.INSTANCE.getListContactMediumResponseFromContactMedium(contactMediums);
         return response;
     }
+    @Override
+    public List<GetListContactMediumResponse> getByCustomerId(UUID customerId) {
+        List<ContactMedium> contactMediums = contactMediumRepository.findAllByCustomerId(customerId);
+        return ContactMediumMapper.INSTANCE.getListContactMediumResponseFromContactMedium(contactMediums);
+    }
+
 }

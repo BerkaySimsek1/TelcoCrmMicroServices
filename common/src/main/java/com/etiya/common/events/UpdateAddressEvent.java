@@ -10,8 +10,6 @@ public record UpdateAddressEvent(
         int districtId,
         String districtName,
         int cityId,
-        String cityName,
-        String createdDate,
-        String updatedDate
+        String cityName
 ) {
 }
