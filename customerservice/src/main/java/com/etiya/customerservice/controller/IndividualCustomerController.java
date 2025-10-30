@@ -7,6 +7,7 @@ import com.etiya.customerservice.service.responses.individualCustomer.*;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,5 +83,11 @@ public class IndividualCustomerController {
     @ResponseStatus(HttpStatus.OK)
     public void softDelete(@PathVariable UUID id) {
         individualCustomerService.softDelete(id);
+    }
+
+    @GetMapping("/existsByNationalId/{nationalId}")
+    public ResponseEntity<Boolean> existsByNationalId(@PathVariable String nationalId) {
+        boolean exists = individualCustomerService.existsByNationalId(nationalId);
+        return ResponseEntity.ok(exists);
     }
 }
