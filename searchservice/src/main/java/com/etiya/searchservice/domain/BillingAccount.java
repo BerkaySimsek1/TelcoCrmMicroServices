@@ -16,4 +16,15 @@ public class BillingAccount {
     String status;
     String accountNumber;
     String accountName;
+    String deletedDate;
+
+    public BillingAccount(int addressId, int id, String type, String status, String accountNumber, String accountName) {
+        this.addressId = addressId;
+        this.id = id;
+        this.type = type;
+        this.status = status;
+        this.accountNumber = accountNumber;
+        this.accountName = accountName;
+        this.deletedDate = null;
+    }
 }

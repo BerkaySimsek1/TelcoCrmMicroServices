@@ -4,6 +4,7 @@ import com.etiya.common.events.SoftDeleteBillingAccountEvent;
 import com.etiya.searchservice.service.CustomerSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
@@ -18,6 +19,7 @@ public class SoftDeletedBillingAccountConsumer {
         this.service = service;
     }
 
+    @Bean
     public Consumer<SoftDeleteBillingAccountEvent> billingAccountSoftDeleted(){
         return event -> {
             service.softDeleteBillingAccount(event.customerId(), event.id(), event.deletedDate());

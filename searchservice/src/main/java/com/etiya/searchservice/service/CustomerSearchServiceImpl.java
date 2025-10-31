@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static java.util.Arrays.stream;
+
 @Service
 public class CustomerSearchServiceImpl implements CustomerSearchService {
 
@@ -33,7 +35,7 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
     public List<CustomerSearch> findAll() {
         return StreamSupport.stream(customerSearchRepository.findAll().spliterator(), false)
                 .filter(customer -> customer.getDeletedDate() == null)
-//                .map(this::filterDeletedAddresses)
+                .map(this::filterDeletedBillingAccounts)
                 .collect(Collectors.toList());
 
     }
@@ -82,10 +84,10 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     @Override
     public List<CustomerSearch> searchAllFields(String name) {
-        return customerSearchRepository.searchAllFields(name);
-//                .stream()
-//                .map(this::filterDeletedAddresses)
-//                .collect(Collectors.toList());
+        return customerSearchRepository.searchAllFields(name)
+                .stream()
+                .map(this::filterDeletedBillingAccounts)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -209,17 +211,25 @@ public class CustomerSearchServiceImpl implements CustomerSearchService {
 
     @Override
     public void softDeleteBillingAccount(String customerId, int id, String deletedDate) {
+        var cs = customerSearchRepository.findById(customerId).orElseThrow();
+        if (cs.getBillingAccounts() != null) {
+            cs.getBillingAccounts().forEach(ba -> {
+                if (ba.getId() == id) {
+                    ba.setDeletedDate(deletedDate);
+                }
+            });
 
+            customerSearchRepository.save(cs);
+    }}
+
+    private CustomerSearch filterDeletedBillingAccounts(CustomerSearch cs) {
+        if (cs.getBillingAccounts() != null) {
+            cs.setBillingAccounts(
+                    cs.getBillingAccounts().stream()
+                            .filter(a -> a.getDeletedDate() == null)
+                            .collect(Collectors.toList())
+            );
+        }
+        return cs;
     }
-
-//    private CustomerSearch filterDeletedAddresses(CustomerSearch cs) {
-//        if (cs.getAddresses() != null) {
-//            cs.setAddresses(
-//                    cs.getAddresses().stream()
-//                            .filter(a -> a.getDeletedDate() == null)
-//                            .collect(Collectors.toList())
-//            );
-//        }
-//        return cs;
-//    }
 }

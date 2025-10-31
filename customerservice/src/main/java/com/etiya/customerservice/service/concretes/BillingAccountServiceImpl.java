@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class BillingAccountServiceImpl implements BillingAccountService {
+public class  BillingAccountServiceImpl implements BillingAccountService {
 
     public final BillingAccountRepository billingAccountRepository;
     public final BillingAccountBusinessRules billingAccountBusinessRules;
