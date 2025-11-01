@@ -1,4 +1,4 @@
-package com.etiya.catalogservice.domain;
+package com.etiya.catalogservice.domain.entities;
 
 import com.etiya.common.entities.BaseEntity;
 import jakarta.persistence.*;
@@ -28,14 +28,10 @@ public class CharacteristicValue extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "char_id", nullable = false) // Hangi niteliğe (Characteristic) ait
-    private Characteristics characteristics;
+    private Characteristic characteristic;
 
     @Column(name = "value", nullable = false)
     private String value; // Örn: "8", "24", "Kırmızı"
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "char_id", nullable = false) // Hangi niteliğe (Characteristic) ait
-    private Characteristics characteristic;
 
     // Bu değerin (Örn: "8 Mbps") hangi ürünlerde sabitlendiğini gösteren ara tablo
     @OneToMany(mappedBy = "characteristicValue", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

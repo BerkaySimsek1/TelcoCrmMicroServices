@@ -1,4 +1,4 @@
-package com.etiya.catalogservice.domain;
+package com.etiya.catalogservice.domain.entities;
 
 import com.etiya.common.entities.BaseEntity;
 import jakarta.persistence.*;
@@ -33,5 +33,5 @@ public class ProductSpecCharacteristic extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "characteristic_id", nullable = false)
-    private Characteristics characteristics;
+    private Characteristic characteristic;
 }

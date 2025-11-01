@@ -1,4 +1,4 @@
-package com.etiya.catalogservice.domain;
+package com.etiya.catalogservice.domain.entities;
 
 import com.etiya.common.entities.BaseEntity;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "characteristics")
-public class Characteristics extends BaseEntity {
+public class Characteristic extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.etiya.catalogservice.domain;
+package com.etiya.catalogservice.domain.entities;
 
 import com.etiya.common.entities.BaseEntity;
 import jakarta.persistence.*;
@@ -16,8 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "campaigns")
-public class Campaign extends BaseEntity {
+@Table(name = "product_offers")
+public class ProductOffer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,19 +27,27 @@ public class Campaign extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
     @Column(name = "end_date") // Bitiş tarihi null olabilir
     private LocalDateTime endDate;
 
-    @Column(name = "campaign_code", nullable = false, unique = true)
-    private String campaignCode;
-
     @Column(name = "discount_rate", nullable = false)
     private BigDecimal discountRate;
 
-    // Bir kampanya, birden fazla ürünü kapsayabilir (CampaignProduct ara tablosu üzerinden)
-    @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CampaignProducts> campaignProducts;
+    @Column(name = "status", nullable = false) // Örn: "Active" [cite: 36, 179]
+    private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false) // Bu teklif hangi ana ürüne (SKU) bağlı
+    private Product product;
+
+    // Bir teklif, birden fazla katalogda gösterilebilir
+    // (CatalogProductOffer ara tablosu üzerinden)
+    @OneToMany(mappedBy = "productOffer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CatalogProductOffer> catalogProductOffers;
 }

@@ -100,7 +100,7 @@ services:
     container_name: catalogservicedb
     image: postgres
     ports:
-      - "5452:5432" # Diğer servislerle çakışmaması için 5452 portunu kullanıyoruz
+      - "5452:5432" # Diğer servislerle çakışmaması için 5452 portunu kullandım
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=123456

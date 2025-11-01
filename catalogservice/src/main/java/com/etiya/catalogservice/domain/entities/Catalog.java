@@ -1,4 +1,4 @@
-package com.etiya.catalogservice.domain;
+package com.etiya.catalogservice.domain.entities;
 
 
 import com.etiya.common.entities.BaseEntity;
