@@ -1,0 +1,34 @@
+package com.etiya.catalogservice.service.concretes;
+
+import com.etiya.catalogservice.domain.entities.Catalog;
+import com.etiya.catalogservice.repository.CatalogRepository;
+import com.etiya.catalogservice.service.abstracts.CatalogService;
+import com.etiya.catalogservice.service.dtos.request.catalog.CreateCatalogRequest;
+import com.etiya.catalogservice.service.dtos.response.catalog.CreatedCatalogResponse;
+import com.etiya.catalogservice.service.mappers.CatalogMapper;
+import com.etiya.catalogservice.service.rules.CatalogBusinessRules;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CatalogServiceImpl implements CatalogService {
+    private final CatalogRepository catalogRepository;
+    private final CatalogBusinessRules catalogBusinessRules;
+
+    public CatalogServiceImpl(CatalogRepository catalogRepository, CatalogMapper catalogMapper, CatalogBusinessRules catalogBusinessRules) {
+        this.catalogRepository = catalogRepository;
+        this.catalogBusinessRules = catalogBusinessRules;
+    }
+
+    @Override
+    public CreatedCatalogResponse add(CreateCatalogRequest request) {
+        catalogBusinessRules.checkIfParentCatalogExists(request.getParentId());
+
+        Catalog catalog = CatalogMapper.INSTANCE.catalogFromCreateCatalogRequest(request);
+
+        Catalog savedCatalog = catalogRepository.save(catalog);
+
+        CreatedCatalogResponse createdCatalogResponse = CatalogMapper.INSTANCE.createdCatalogResponseFromCatalog(savedCatalog);
+
+        return createdCatalogResponse;
+    }
+}
