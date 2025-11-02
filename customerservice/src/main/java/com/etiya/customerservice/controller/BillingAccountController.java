@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/billing-accounts")
@@ -54,9 +55,8 @@ public class BillingAccountController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UpdatedBillingAccountResponse update(@PathVariable int id, @RequestBody UpdateBillingAccountRequest request) {
-        request.setId(id);
-        return billingAccountService.update(request);
+    public UpdatedBillingAccountResponse update(@PathVariable int id,@Valid @RequestBody UpdateBillingAccountRequest request) {
+        return billingAccountService.update(id,request);
     }
 
 
@@ -76,5 +76,10 @@ public class BillingAccountController {
     @ResponseStatus(HttpStatus.OK)
     public List<GetListBillingAccountResponse> findAllByAccountNameStartingPrefix(String prefix) {
         return billingAccountService.findAllByAccountNameStartingPrefix(prefix);
+    }
+    @GetMapping("findActiveByCustomerId/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GetListBillingAccountResponse> findActiveByCustomerId(@PathVariable UUID customerId) {
+        return billingAccountService.findActiveByCustomerId(customerId);
     }
 }

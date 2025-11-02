@@ -4,7 +4,6 @@ import com.etiya.common.events.CreateBillingAccountEvent;
 import com.etiya.common.events.DeleteBillingAccountEvent;
 import com.etiya.common.events.SoftDeleteBillingAccountEvent;
 import com.etiya.common.events.UpdateBillingAccountEvent;
-import com.etiya.customerservice.domain.entities.Address;
 import com.etiya.customerservice.domain.entities.BillingAccount;
 import com.etiya.customerservice.repository.BillingAccountRepository;
 import com.etiya.customerservice.service.abstracts.BillingAccountService;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class  BillingAccountServiceImpl implements BillingAccountService {
@@ -50,7 +50,7 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
         billingAccountBusinessRules.checkAddressMatchWithCustomerInBillingAccount(request.getAddressId(), request.getCustomerId());
         //billingAccountBusinessRules.checkTypesBetweenBillingAccountAndCustomer(request.getType());
         BillingAccount billingAccount = BillingAccountMapper.INSTANCE.billingAccountFromBillingAccountRequest(request);
-
+        billingAccount.setStatus("Active");
         BillingAccount createdBillingAccount = billingAccountRepository.save(billingAccount);
 
         CreateBillingAccountEvent event = new CreateBillingAccountEvent(
@@ -86,52 +86,25 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
     }
 
     @Override
-    public UpdatedBillingAccountResponse update(UpdateBillingAccountRequest request) {
-        billingAccountBusinessRules.typeCannotBeChanged(request.getId(), request.getType());
-        billingAccountBusinessRules.statusRules(request.getId(), request.getStatus());
-        BillingAccount billingAccount = billingAccountRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("billing account not found"));
+    public UpdatedBillingAccountResponse update(int id,UpdateBillingAccountRequest request) {
+        BillingAccount existingBillingAccount = billingAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("billing account not found"));
 
-        if (request.getAccountName() != null) {
-            billingAccount.setAccountName(request.getAccountName());
-        }
-        if (request.getStatus() != null) {
-            billingAccount.setStatus(request.getStatus());
-        }
-        if (request.getType() != null) {
-            billingAccount.setType(request.getType());
-        }
-        if (request.getAddressId() != null) {
-            Address address = new Address();
-            address.setId(request.getAddressId());
-            billingAccount.setAddress(address);
-        }
+        BillingAccountMapper.INSTANCE.billingAccountFromUpdateBillingAccountRequest(request, existingBillingAccount);
+        BillingAccount saved = billingAccountRepository.save(existingBillingAccount);
 
-        BillingAccount saved = billingAccountRepository.save(billingAccount);
-
-        UpdatedBillingAccountResponse resp = new UpdatedBillingAccountResponse();
-        resp.setId(saved.getId());
-        resp.setAccountName(saved.getAccountName());
-        resp.setAccountNumber(saved.getAccountNumber());
-        resp.setStatus(saved.getStatus());
-        resp.setType(saved.getType());
-        resp.setCustomerId(saved.getCustomer().getId());
-        resp.setAddressId(saved.getAddress().getId());
-        resp.setCityName(saved.getAddress().getDistrict().getCity().getName());
-        resp.setDistrictName(saved.getAddress().getDistrict().getName());
 
         UpdateBillingAccountEvent event = new UpdateBillingAccountEvent(
-                resp.getId(),
-                resp.getCustomerId().toString(),
-                resp.getAddressId(),
-                resp.getType(),
-                resp.getStatus(),
-                resp.getAccountNumber(),
-                resp.getAccountName()
+                saved.getId(),
+                saved.getCustomer().getId().toString(),
+                saved.getAddress().getId(),
+                saved.getType(),
+                saved.getStatus(),
+                saved.getAccountNumber(),
+                saved.getAccountName()
         );
 
         updateBillingAccountProducer.produceBillingAccountUpdated(event);
-
-        return resp;
+        return BillingAccountMapper.INSTANCE.updatedBillingAccountResponseFromBillingAccount(saved);
     }
 
 
@@ -153,6 +126,7 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
     public void softDelete(int id) {
         billingAccountBusinessRules.checkStatusBeforeDelete(id);
         BillingAccount billingAccount = billingAccountRepository.findById(id).orElseThrow(()-> new RuntimeException("Billing account not found"));
+        billingAccount.setStatus("Inactive");
         billingAccount.setDeletedDate(LocalDateTime.now());
         BillingAccount savedBillingAccount = billingAccountRepository.save(billingAccount);
         SoftDeleteBillingAccountEvent event = new SoftDeleteBillingAccountEvent(
@@ -182,5 +156,10 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
         List<BillingAccount> billingAccounts = billingAccountRepository.findAllByAccountNameStartingPrefix(prefix);
         List<GetListBillingAccountResponse> responseList = BillingAccountMapper.INSTANCE.getListBillingAccountResponseFromBillingAccount(billingAccounts);
         return responseList;
+    }
+    @Override
+    public List<GetListBillingAccountResponse> findActiveByCustomerId(UUID customerId) {
+        List<BillingAccount> billingAccounts = billingAccountRepository.findActiveByCustomerId(customerId);
+        return BillingAccountMapper.INSTANCE.getListBillingAccountResponseFromBillingAccount(billingAccounts);
     }
 }

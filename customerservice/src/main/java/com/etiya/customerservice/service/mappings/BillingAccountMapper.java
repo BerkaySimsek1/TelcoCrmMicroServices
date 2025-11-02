@@ -1,12 +1,16 @@
 package com.etiya.customerservice.service.mappings;
 
+import com.etiya.customerservice.domain.entities.Address;
 import com.etiya.customerservice.domain.entities.BillingAccount;
+import com.etiya.customerservice.service.requests.address.UpdateAddressRequest;
 import com.etiya.customerservice.service.requests.billingAccount.CreateBillingAccountRequest;
+import com.etiya.customerservice.service.requests.billingAccount.UpdateBillingAccountRequest;
+import com.etiya.customerservice.service.responses.address.UpdatedAddressResponse;
 import com.etiya.customerservice.service.responses.billingAccount.CreatedBillingAccountResponse;
 import com.etiya.customerservice.service.responses.billingAccount.GetBillingAccountResponse;
 import com.etiya.customerservice.service.responses.billingAccount.GetListBillingAccountResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.etiya.customerservice.service.responses.billingAccount.UpdatedBillingAccountResponse;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -22,6 +26,16 @@ public interface BillingAccountMapper {
     @Mapping(target = "customerId", source = "customer.id")
     @Mapping(target = "addressId", source = "address.id")
     CreatedBillingAccountResponse createdBillingAccountFromBillingAccount(BillingAccount billingAccount);
+
+    @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "address", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    BillingAccount billingAccountFromUpdateBillingAccountRequest(UpdateBillingAccountRequest request, @MappingTarget BillingAccount  billingAccount);
+
+    @Mapping(target = "customerId", source = "customer.id")
+    @Mapping(target = "addressId", source = "address.id")
+    UpdatedBillingAccountResponse updatedBillingAccountResponseFromBillingAccount(BillingAccount billingAccount);
 
     @Mapping(target = "customerId", source = "customer.id")
     @Mapping(target = "addressId", source = "address.id")
