@@ -37,7 +37,7 @@ public class CreateBillingAccountRequest {
     )
     private String status;
 
-    @NotBlank(message =Messages.BillingAccountAccountNumberNotBlank)
+
     @Length(min = 3, max = 100, message = Messages.BillingAccountAccountNumberLength)
     @Pattern(regexp = "^[\\p{L}\\p{Nd} -]+$", message = Messages.BillingAccountAccountNumberPattern)
     private String accountNumber;
