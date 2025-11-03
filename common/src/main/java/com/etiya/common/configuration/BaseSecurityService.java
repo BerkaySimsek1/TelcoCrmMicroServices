@@ -21,6 +21,9 @@ public class BaseSecurityService {
             "/v3/api-docs",
             "/v3/api-docs/**",
             "/api/auth/**",
+            "/api/catalogs/**",
+            "/api/products/**",
+            "/api/product-spec/**",
             /*
             "/api/individual-customers/**",
             "/api/addresses/**",

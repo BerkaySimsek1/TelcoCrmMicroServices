@@ -14,7 +14,7 @@ public class ProductSpecificationServiceImpl implements ProductSpecificationServ
     private final ProductSpecificationRepository productSpecificationRepository;
     private final ProductSpecificationBusinessRules productSpecificationBusinessRules;
 
-    public ProductSpecificationServiceImpl(ProductSpecificationRepository productSpecificationRepository, ProductSpecificationMapper productSpecificationMapper, ProductSpecificationBusinessRules productSpecificationBusinessRules) {
+    public ProductSpecificationServiceImpl(ProductSpecificationRepository productSpecificationRepository, ProductSpecificationBusinessRules productSpecificationBusinessRules) {
         this.productSpecificationRepository = productSpecificationRepository;
         this.productSpecificationBusinessRules = productSpecificationBusinessRules;
     }

@@ -12,7 +12,7 @@ public interface CatalogMapper {
     CatalogMapper INSTANCE = Mappers.getMapper(CatalogMapper.class);
 
     //create
-    @Mapping(target = "parent.id", source = "parentId") // FK mapping (parentId null ise parent de null olur)
+
     Catalog catalogFromCreateCatalogRequest(CreateCatalogRequest request);
     @Mapping(target = "parentId", source = "parent.id") // Tersine FK mapping
     CreatedCatalogResponse createdCatalogResponseFromCatalog(Catalog catalog);

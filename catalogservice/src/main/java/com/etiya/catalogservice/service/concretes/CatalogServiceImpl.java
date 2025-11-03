@@ -14,7 +14,7 @@ public class CatalogServiceImpl implements CatalogService {
     private final CatalogRepository catalogRepository;
     private final CatalogBusinessRules catalogBusinessRules;
 
-    public CatalogServiceImpl(CatalogRepository catalogRepository, CatalogMapper catalogMapper, CatalogBusinessRules catalogBusinessRules) {
+    public CatalogServiceImpl(CatalogRepository catalogRepository,CatalogBusinessRules catalogBusinessRules) {
         this.catalogRepository = catalogRepository;
         this.catalogBusinessRules = catalogBusinessRules;
     }
@@ -24,6 +24,12 @@ public class CatalogServiceImpl implements CatalogService {
         catalogBusinessRules.checkIfParentCatalogExists(request.getParentId());
 
         Catalog catalog = CatalogMapper.INSTANCE.catalogFromCreateCatalogRequest(request);
+
+
+        if (request.getParentId() != null) {
+            Catalog parentRef = catalogRepository.getReferenceById(request.getParentId());
+            catalog.setParent(parentRef);
+        }
 
         Catalog savedCatalog = catalogRepository.save(catalog);
 
