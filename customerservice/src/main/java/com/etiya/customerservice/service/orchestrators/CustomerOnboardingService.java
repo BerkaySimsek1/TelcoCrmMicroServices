@@ -86,6 +86,7 @@ public class CustomerOnboardingService {
         List<CreateFullCustomerResponse.CreatedAddressMini> addrMinis = new ArrayList<>();
         for (CreateAddressItem a : req.getAddresses()) {
             Address address = new Address();
+            address.setTitle(a.getTitle());
             address.setStreet(a.getStreet());
             address.setHouseNumber(a.getHouseNumber());
             address.setDescription(a.getDescription());
