@@ -19,9 +19,9 @@ import java.util.List;
 public class Product extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private int id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,7 +40,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "spec_id", nullable = false) // Hangi teknik özellikleri (spec) kullanıyor
     private ProductSpecification productSpecification;
 
-    // Bir ürün (SKU) birden fazla teklifte (Offer) kullanılabilir
+    // Bir ürün birden fazla teklifte (Offer) kullanılabilir
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductOffer> productOffers;
 

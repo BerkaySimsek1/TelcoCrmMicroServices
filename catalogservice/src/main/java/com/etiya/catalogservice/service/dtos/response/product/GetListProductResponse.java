@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetListProductResponse {
-    private Integer id;
+    private String id;
     private String name;
     private BigDecimal price;
     private Integer stock;
