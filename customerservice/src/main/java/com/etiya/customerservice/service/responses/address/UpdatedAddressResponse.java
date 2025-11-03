@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 public class UpdatedAddressResponse {
     private int id;
+    private String title;
     private String street;
     private String houseNumber;
     private String description;

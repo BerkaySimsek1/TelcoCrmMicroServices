@@ -8,7 +8,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class GetAddressResponse {
-    private int  id;
+    private int id;
+    private String title;
     private String street;
     private String houseNumber;
     private String description;

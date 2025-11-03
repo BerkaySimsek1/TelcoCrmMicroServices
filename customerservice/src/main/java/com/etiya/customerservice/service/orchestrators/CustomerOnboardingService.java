@@ -100,6 +100,7 @@ public class CustomerOnboardingService {
             CreateAddressEvent addrEvent = new CreateAddressEvent(
                     created.getId().toString(),
                     saved.getId(),
+                    saved.getTitle(),
                     saved.getStreet(),
                     saved.getHouseNumber(),
                     saved.getDescription(),

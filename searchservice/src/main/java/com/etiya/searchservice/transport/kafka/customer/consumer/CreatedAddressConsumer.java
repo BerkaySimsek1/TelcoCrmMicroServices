@@ -26,7 +26,7 @@ public class CreatedAddressConsumer {
     @Bean
     public Consumer<CreateAddressEvent> addressCreated() {
         return event -> {
-            Address address = new Address(event.id(), event.street(), event.houseNumber(), event.description(),
+            Address address = new Address(event.id(), event.title(), event.street(), event.houseNumber(), event.description(),
                 event.isDefault(), event.districtId(), event.districtName(), event.cityId(), event.cityName()
                     );
             service.addAddress(event.customerId(), address);

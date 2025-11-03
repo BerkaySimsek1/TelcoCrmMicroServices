@@ -95,10 +95,30 @@ services:
       - POSTGRES_DB=identitydb
     volumes:
       - "auth-data:/var/lib/postgresql/data"
-  
 
+  catalogservicedb:
+    container_name: catalogservicedb
+    image: postgres
+    ports:
+      - "5452:5432" # Diğer servislerle çakışmaması için 5452 portunu kullandım
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=catalogdb # Veritabanı adı olarak 'catalogdb'
+    volumes:
+      - "catalog-data:/var/lib/postgresql/data"
+
+  basketservicedb:
+    container_name: basketservicedb
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - basket-data:/data
 
 
 volumes:
   customer-data:
   auth-data:
+  catalog-data:
+  basket-data:

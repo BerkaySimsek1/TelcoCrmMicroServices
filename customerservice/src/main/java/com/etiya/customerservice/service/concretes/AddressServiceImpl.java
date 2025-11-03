@@ -61,6 +61,7 @@ public class AddressServiceImpl implements AddressService {
         CreateAddressEvent event = new CreateAddressEvent(
                 createdAddress.getCustomer().getId().toString(),
                 createdAddress.getId(),
+                createdAddress.getTitle(),
                 createdAddress.getStreet(),
                 createdAddress.getHouseNumber(),
                 createdAddress.getDescription(),
@@ -94,6 +95,7 @@ public class AddressServiceImpl implements AddressService {
         UpdateAddressEvent event  = new UpdateAddressEvent(
                 saved.getCustomer().getId().toString(),
                 saved.getId(),
+                saved.getTitle(),
                 saved.getStreet(),
                 saved.getHouseNumber(),
                 saved.getDescription(),

@@ -19,7 +19,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         baseSecurityService.configureCoreSecurity(httpSecurity);
-        httpSecurity.authorizeHttpRequests(requests -> requests.anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests
+                (requests -> requests.anyRequest().authenticated());
         return httpSecurity.build();
     }
 }
