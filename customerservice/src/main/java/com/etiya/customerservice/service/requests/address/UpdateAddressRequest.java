@@ -12,6 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateAddressRequest {
+
+    private String title;
     private String street;
     private String houseNumber;
     private String description;

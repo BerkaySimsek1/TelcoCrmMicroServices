@@ -3,6 +3,7 @@ package com.etiya.common.events;
 public record UpdateAddressEvent(
         String customerId,
         int id,
+        String title,
         String street,
         String houseNumber,
         String description,

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record CreateAddressEvent(
         String customerId,
         int id,
+        String title,
         String street,
         String houseNumber,
         String description,
