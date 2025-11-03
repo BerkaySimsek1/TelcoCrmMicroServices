@@ -9,12 +9,13 @@ import com.etiya.customerservice.service.responses.billingAccount.UpdatedBilling
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BillingAccountService {
     CreatedBillingAccountResponse add(CreateBillingAccountRequest request);
     List<GetListBillingAccountResponse> getAll();
     GetBillingAccountResponse getById(int id);
-    UpdatedBillingAccountResponse update(UpdateBillingAccountRequest request);
+    UpdatedBillingAccountResponse update(int id,UpdateBillingAccountRequest request);
     void delete(int id);
     void softDelete(int id);
 
@@ -22,7 +23,7 @@ public interface BillingAccountService {
     List<GetListBillingAccountResponse> findAllByTypeCorporate();
     List<GetListBillingAccountResponse> findAllByAccountNameStartingPrefix(String prefix);
 
-
+    List<GetListBillingAccountResponse> findActiveByCustomerId(UUID customerId);
 
 }
 

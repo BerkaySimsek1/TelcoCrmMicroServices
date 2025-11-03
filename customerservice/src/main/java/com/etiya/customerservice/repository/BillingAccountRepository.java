@@ -20,4 +20,6 @@ public interface BillingAccountRepository extends JpaRepository<BillingAccount, 
     @Query(value = "Select count(*)>0 from addresses a where a.id = :addressId and a.customer_id = :customerId", nativeQuery = true)
     boolean checkAddressContainsCustomer(@Param("addressId") int addressId, @Param("customerId") UUID customerId);
 
+    @Query("SELECT b FROM BillingAccount b WHERE b.customer.id = :customerId AND b.deletedDate IS NULL")
+    List<BillingAccount> findActiveByCustomerId(UUID customerId);
 }

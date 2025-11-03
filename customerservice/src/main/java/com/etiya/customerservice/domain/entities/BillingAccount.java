@@ -30,7 +30,7 @@ public class BillingAccount extends BaseEntity {
     private Address address;
 
     @Column(name="type",nullable = false)
-    private String type;
+    private String type = "Billing Account";
 
     @Column(name="status",nullable = false)
     private String status;

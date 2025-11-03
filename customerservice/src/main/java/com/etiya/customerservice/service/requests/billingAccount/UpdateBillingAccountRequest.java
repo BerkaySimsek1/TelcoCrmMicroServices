@@ -10,10 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateBillingAccountRequest {
-    private int id;
     private String accountName;
-    private String status;
-    private String type;
     private Integer addressId;
     // accuntNumber immutable tutuldu.
 }
