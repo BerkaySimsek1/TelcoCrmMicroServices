@@ -34,7 +34,7 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spec_id", nullable = false) // Hangi teknik özellikleri (spec) kullanıyor

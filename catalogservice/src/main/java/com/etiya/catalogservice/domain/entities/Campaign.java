@@ -37,7 +37,7 @@ public class Campaign extends BaseEntity {
     private String campaignCode;
 
     @Column(name = "discount_rate", nullable = false)
-    private BigDecimal discountRate;
+    private double discountRate;
 
     // Bir kampanya, birden fazla ürünü kapsayabilir (CampaignProduct ara tablosu üzerinden)
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

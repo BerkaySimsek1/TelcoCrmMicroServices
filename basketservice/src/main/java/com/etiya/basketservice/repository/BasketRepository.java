@@ -11,22 +11,24 @@ import java.util.Map;
 public class BasketRepository {
 
     public static final String Key = "BASKET";
-    private final HashOperations<String, String, Basket> basketHashOperations;
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final HashOperations<String, String, Basket> basketHashOperations;
 
-    public BasketRepository(HashOperations<String, String, Basket> basketHashOperations, RedisTemplate<String, Object> redisTemplate) {
-        this.basketHashOperations = redisTemplate.opsForHash();
+
+
+    public BasketRepository(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
+        this.basketHashOperations = redisTemplate.opsForHash();
     }
     // billing account'a göre yapılacak
     public void addItem(Basket basket) {
-        this.basketHashOperations.put(Key,basket.getId() +"_" + basket.getCustomer_id(), basket);
+        this.basketHashOperations.put(Key,basket.getId() +"_" + basket.getBillingAccId(), basket);
 
     }
-    public Basket getBasketByCustomerId(String customerId) {
+    public Basket getBasketByCustomerId(String billingAccId) {
         return basketHashOperations.entries(Key).values().stream()
-                .filter(basket -> customerId.equals(basket.getCustomer_id())).findFirst().orElse(null);
+                .filter(basket -> billingAccId.equals(basket.getBillingAccId())).findFirst().orElse(null);
     }
 
     public Map<String, Basket> getBasketMap() {

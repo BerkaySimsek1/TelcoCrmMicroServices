@@ -20,7 +20,7 @@ public class UpdateProductRequest {
     private String name;
 
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.")
-    private BigDecimal price;
+    private double price;
 
     @Min(value = 0, message = "Stock cannot be negative.")
     private Integer stock;

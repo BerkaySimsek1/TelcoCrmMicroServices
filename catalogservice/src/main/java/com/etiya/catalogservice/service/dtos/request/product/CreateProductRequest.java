@@ -1,9 +1,6 @@
 package com.etiya.catalogservice.service.dtos.request.product;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,14 +16,14 @@ public class CreateProductRequest {
     private String name;
 
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.")
-    private BigDecimal price;
+    private double price;
 
     @Min(value = 0, message = "Stock cannot be negative.")
     private Integer stock; // Servisler için null olabilir
 
-    @NotEmpty(message = "Catalog ID cannot be empty.")
+    @NotNull(message = "Catalog ID cannot be empty.")
     private int catalogId;
 
-    @NotEmpty(message = "Product Specification ID cannot be empty.")
+    @NotNull(message = "Product Specification ID cannot be empty.")
     private int productSpecificationId;
 }

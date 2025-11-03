@@ -11,7 +11,7 @@ public class Basket implements Serializable {
 
     private String id;
 
-    private String customer_id; // billing account id'si kullanılacak
+    private int billingAccId ; // billing account id'si kullanılacak
 
     private double totalPrice;
 
@@ -30,12 +30,12 @@ public class Basket implements Serializable {
         this.id = id;
     }
 
-    public String getCustomer_id() {
-        return customer_id;
+    public int getBillingAccId() {
+        return billingAccId;
     }
 
-    public void setCustomer_id(String customer_id) {
-        this.customer_id = customer_id;
+    public void setBillingAccId(int billingAccId) {
+        this.billingAccId = billingAccId;
     }
 
     public double getTotalPrice() {

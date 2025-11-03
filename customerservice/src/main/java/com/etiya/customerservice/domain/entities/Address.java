@@ -24,6 +24,8 @@ public class Address extends BaseEntity {
     @Column(name = "id")
     private int id;
 
+
+
     // Many addresses belong to one customer
     @ManyToOne()
     @JoinColumn(name = "customer_id", nullable = false)

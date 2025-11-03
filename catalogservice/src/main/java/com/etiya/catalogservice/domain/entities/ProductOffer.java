@@ -37,7 +37,7 @@ public class ProductOffer extends BaseEntity {
     private LocalDateTime endDate;
 
     @Column(name = "discount_rate", nullable = false)
-    private BigDecimal discountRate;
+    private double discountRate;
 
     @Column(name = "status", nullable = false) // Örn: "Active" [cite: 36, 179]
     private String status;
