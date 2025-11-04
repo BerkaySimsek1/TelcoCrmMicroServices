@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.etiya.common.configuration.BaseSecurityService.WHITE_LIST;
+
 @Configuration
 public class SecurityConfig {
 
@@ -22,6 +24,7 @@ public class SecurityConfig {
         baseSecurityService.configureCoreSecurity(httpSecurity);
         httpSecurity.authorizeHttpRequests
                 (requests -> requests
+                        .requestMatchers(WHITE_LIST).permitAll()
                         .anyRequest().authenticated());
         return httpSecurity.build();
     }

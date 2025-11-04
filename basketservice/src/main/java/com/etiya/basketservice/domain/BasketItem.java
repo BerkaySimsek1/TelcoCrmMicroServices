@@ -73,7 +73,11 @@ public class BasketItem implements Serializable {
     }
 
     public double getDiscountedPrice() {
-        return this.productPrice - (this.productPrice * this.discount);
+        // Güvenli tarafta kal: her okumada dinamik hesap
+        double rate = discount;
+        if (rate < 0) rate = 0;
+        if (rate > 1) rate = 1;
+        return productPrice * (1 - rate);
     }
 
     public void setDiscountedPrice(double discountedPrice) {

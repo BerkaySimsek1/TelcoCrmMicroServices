@@ -24,6 +24,9 @@ public class BaseSecurityService {
             "/api/catalogs/**",
             "/api/products/**",
             "/api/product-spec/**",
+            "/api/campaign-products/**",
+            "/api/product-offers/**",
+            "/api/campaigns/**"
             /*
             "/api/individual-customers/**",
             "/api/addresses/**",
