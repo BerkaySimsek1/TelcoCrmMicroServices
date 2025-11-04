@@ -3,5 +3,5 @@ package com.etiya.catalogservice.repository;
 import com.etiya.catalogservice.domain.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface ProductRepository extends JpaRepository<Product, String> {
 }

@@ -26,9 +26,13 @@ public class BasketRepository {
         this.basketHashOperations.put(Key,basket.getId() +"_" + basket.getBillingAccId(), basket);
 
     }
-    public Basket getBasketByCustomerId(String billingAccId) {
+    public Basket getBasketByBillingAccountId(int billingAccId) {
         return basketHashOperations.entries(Key).values().stream()
-                .filter(basket -> billingAccId.equals(basket.getBillingAccId())).findFirst().orElse(null);
+                .filter(basket -> billingAccId == basket.getBillingAccId()).findFirst().orElse(null);
+    }
+
+    public Map<String,Basket> getAll(){
+        return this.basketHashOperations.entries(Key);
     }
 
     public Map<String, Basket> getBasketMap() {

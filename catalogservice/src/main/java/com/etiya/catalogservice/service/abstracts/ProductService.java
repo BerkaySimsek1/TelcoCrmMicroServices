@@ -6,6 +6,7 @@ import com.etiya.catalogservice.service.dtos.response.product.CreatedProductResp
 import com.etiya.catalogservice.service.dtos.response.product.GetListProductResponse;
 import com.etiya.catalogservice.service.dtos.response.product.GetProductResponse;
 import com.etiya.catalogservice.service.dtos.response.product.UpdatedProductResponse;
+import com.etiya.common.responses.ProductResponse;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ public interface ProductService {
     UpdatedProductResponse update(UpdateProductRequest request);
     void softDelete(int id); // soft delete
     void delete(int id);
-    GetProductResponse getById(int id);
+    //GetProductResponse getById(int id);
     List<GetListProductResponse> getAll();
+
+    ProductResponse getById(String id);
 }

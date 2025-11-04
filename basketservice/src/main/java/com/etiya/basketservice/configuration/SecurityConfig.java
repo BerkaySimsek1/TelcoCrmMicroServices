@@ -1,10 +1,9 @@
-package com.etiya.catalogservice.core.configuration;
+package com.etiya.basketservice.configuration;
 
 import com.etiya.common.configuration.BaseSecurityService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -21,8 +20,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         baseSecurityService.configureCoreSecurity(httpSecurity);
         httpSecurity.authorizeHttpRequests
-                (requests -> requests.requestMatchers("/api/products/**").permitAll().anyRequest().authenticated());
+                (requests -> requests.anyRequest().authenticated());
         return httpSecurity.build();
     }
 }
-

@@ -57,7 +57,7 @@ public class BasketItem implements Serializable {
     }
 
     public double getDiscount() {
-        return this.productPrice - (this.discount*this.productPrice);
+        return discount;
     }
 
     public void setDiscount(double discount) {

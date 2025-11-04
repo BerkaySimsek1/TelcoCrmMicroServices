@@ -1,5 +1,6 @@
 package com.etiya.customerservice.service.abstracts;
 
+import com.etiya.common.responses.BillingAccountResponse;
 import com.etiya.customerservice.service.requests.billingAccount.CreateBillingAccountRequest;
 import com.etiya.customerservice.service.requests.billingAccount.UpdateBillingAccountRequest;
 import com.etiya.customerservice.service.responses.billingAccount.CreatedBillingAccountResponse;
@@ -18,6 +19,8 @@ public interface BillingAccountService {
     UpdatedBillingAccountResponse update(int id,UpdateBillingAccountRequest request);
     void delete(int id);
     void softDelete(int id);
+
+    BillingAccountResponse getByIdForBasket(int id);
 
     List<GetListBillingAccountResponse> findAllByOrderByAccountNameDesc();
     List<GetListBillingAccountResponse> findAllByTypeCorporate();

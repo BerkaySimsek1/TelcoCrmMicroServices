@@ -1,5 +1,6 @@
 package com.etiya.customerservice.controller;
 
+import com.etiya.common.responses.BillingAccountResponse;
 import com.etiya.customerservice.service.abstracts.BillingAccountService;
 import com.etiya.customerservice.service.requests.billingAccount.CreateBillingAccountRequest;
 import com.etiya.customerservice.service.requests.billingAccount.UpdateBillingAccountRequest;
@@ -81,5 +82,12 @@ public class BillingAccountController {
     @ResponseStatus(HttpStatus.OK)
     public List<GetListBillingAccountResponse> findActiveByCustomerId(@PathVariable UUID customerId) {
         return billingAccountService.findActiveByCustomerId(customerId);
+    }
+
+
+    @GetMapping("findByIdForBasket/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BillingAccountResponse findByIdForBasket(@PathVariable int id) {
+        return billingAccountService.getByIdForBasket(id);
     }
 }

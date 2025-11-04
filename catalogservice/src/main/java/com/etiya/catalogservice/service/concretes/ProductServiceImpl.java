@@ -11,6 +11,8 @@ import com.etiya.catalogservice.service.dtos.response.product.GetProductResponse
 import com.etiya.catalogservice.service.dtos.response.product.UpdatedProductResponse;
 import com.etiya.catalogservice.service.mappers.ProductMapper;
 import com.etiya.catalogservice.service.rules.ProductBusinessRules;
+import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
+import com.etiya.common.responses.ProductResponse;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,13 +59,27 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Override
-    public GetProductResponse getById(int id) {
-        return null;
-    }
+//    @Override
+//    public GetProductResponse getById(int id) {
+//        return null;
+//    }
 
     @Override
     public List<GetListProductResponse> getAll() {
         return List.of();
+    }
+
+    @Override
+    public ProductResponse getById(String id) {
+        return productRepository.findById(id).stream().map(this::mapToResponse).findFirst().orElseThrow(() -> new BusinessException("Product not found"));
+    }
+
+
+    private ProductResponse mapToResponse(Product product) {
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(product.getId());
+        productResponse.setProductName(product.getName());
+        productResponse.setPrice(product.getPrice());
+        return productResponse;
     }
 }

@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests ->
-                        requests.anyRequest().authenticated());
+                        requests.requestMatchers("/api/billing-accounts/**").permitAll().anyRequest().authenticated());
 
         return httpSecurity.build();
     }

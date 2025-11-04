@@ -1,9 +1,11 @@
 package com.etiya.customerservice.service.concretes;
 
+import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.etiya.common.events.CreateBillingAccountEvent;
 import com.etiya.common.events.DeleteBillingAccountEvent;
 import com.etiya.common.events.SoftDeleteBillingAccountEvent;
 import com.etiya.common.events.UpdateBillingAccountEvent;
+import com.etiya.common.responses.BillingAccountResponse;
 import com.etiya.customerservice.domain.entities.BillingAccount;
 import com.etiya.customerservice.repository.BillingAccountRepository;
 import com.etiya.customerservice.service.abstracts.BillingAccountService;
@@ -137,6 +139,8 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
         softDeleteBillingAccountProducer.produceBillingAccountSoftDeleted(event);
     }
 
+
+
     @Override
     public List<GetListBillingAccountResponse> findAllByOrderByAccountNameDesc() {
         List<BillingAccount> billingAccounts = billingAccountRepository.findAllByOrderByAccountNameDesc();
@@ -162,4 +166,18 @@ public class  BillingAccountServiceImpl implements BillingAccountService {
         List<BillingAccount> billingAccounts = billingAccountRepository.findActiveByCustomerId(customerId);
         return BillingAccountMapper.INSTANCE.getListBillingAccountResponseFromBillingAccount(billingAccounts);
     }
+
+
+
+    @Override
+    public BillingAccountResponse getByIdForBasket(int id) {
+        return billingAccountRepository.findById(id).stream().map(this::mapToResponse).findFirst().orElseThrow(() -> new BusinessException("Billing account not found"));
+    }
+
+    // Aşağıdaki metod mapstructla yapılacak
+    private BillingAccountResponse mapToResponse(BillingAccount billingAccount) {
+        BillingAccountResponse response = new BillingAccountResponse();
+        response.setId(billingAccount.getId());
+        return response;
+    };
 }
