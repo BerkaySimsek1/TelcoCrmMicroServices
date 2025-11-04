@@ -18,15 +18,14 @@ public class SecurityConfig {
 
     // Commonda uyguladığımız white listi burada uyguladık
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        baseSecurityService.configureCoreSecurity(httpSecurity);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        baseSecurityService.configureCoreSecurity(http);
 
-        httpSecurity
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(requests ->
-                        requests.requestMatchers("/api/billing-accounts/**").permitAll().anyRequest().authenticated());
+        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated()
+                );
 
-        return httpSecurity.build();
+        return http.build();
     }
 }

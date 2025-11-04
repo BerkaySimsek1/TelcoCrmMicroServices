@@ -15,7 +15,7 @@ public class BaseSecurityService {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    private static final String[] WHITE_LIST= {
+    public static final String[] WHITE_LIST= {
             "/swagger-ui/**",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -36,10 +36,9 @@ public class BaseSecurityService {
              */
     };
 
-    public HttpSecurity configureCoreSecurity(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req->req.requestMatchers(WHITE_LIST).permitAll())
+    public HttpSecurity configureCoreSecurity(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity;
+        return http;
     }
 }
