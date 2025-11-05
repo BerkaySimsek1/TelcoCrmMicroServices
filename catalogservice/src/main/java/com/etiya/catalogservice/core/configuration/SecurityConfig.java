@@ -24,7 +24,6 @@ public class SecurityConfig {
         baseSecurityService.configureCoreSecurity(httpSecurity);
         httpSecurity.authorizeHttpRequests
                 (requests -> requests
-                        .requestMatchers(WHITE_LIST).permitAll()
                         .anyRequest().authenticated());
         return httpSecurity.build();
     }

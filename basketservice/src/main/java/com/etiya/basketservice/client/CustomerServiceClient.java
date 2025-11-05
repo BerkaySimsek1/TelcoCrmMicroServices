@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 // service to service iletişiminde doğrudan servisin portuna istek atmak gerek.
 @FeignClient(
-        name = "customerservice",
-        configuration = com.etiya.basketservice.configuration.FeignAuthConfig.class
+        name = "customerservice"
 )
 public interface CustomerServiceClient {
     @GetMapping("/api/billing-accounts/findByIdForBasket/{id}")

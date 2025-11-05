@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.etiya.common.configuration.BaseSecurityService.WHITE_LIST;
+
 @Configuration
 public class SecurityConfig {
 
@@ -20,7 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         baseSecurityService.configureCoreSecurity(httpSecurity);
         httpSecurity.authorizeHttpRequests
-                (requests -> requests.anyRequest().authenticated());
+                (requests -> requests.requestMatchers(WHITE_LIST).permitAll().anyRequest().authenticated());
         return httpSecurity.build();
     }
 }

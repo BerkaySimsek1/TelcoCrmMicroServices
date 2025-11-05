@@ -9,11 +9,13 @@ import com.etiya.common.crosscuttingconcerns.exceptions.problemdetails.Validatio
 import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.etiya.common.crosscuttingconcerns.exceptions.types.InternalServerException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +39,30 @@ public class GlobalExceptionHandler {
         return internalServerProblemDetails;
     }
 
+
+    @ExceptionHandler({Exception.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetails handleException(Exception exception) {
+        ProblemDetails problemDetails = new ProblemDetails();
+        problemDetails.setTitle("Exception failed");
+        problemDetails.setStatus(HttpStatus.BAD_REQUEST.value());
+        problemDetails.setType(ExceptionMessages.TYPE_EXCEPTION);
+        problemDetails.setDetail(exception.getMessage());
+        return problemDetails;
+    }
+
+
+
+    @ExceptionHandler({AuthorizationDeniedException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ProblemDetails handleException(AuthenticationException exception) {
+        ProblemDetails problemDetails = new ProblemDetails();
+        problemDetails.setTitle("Exception failed");
+        problemDetails.setStatus(HttpStatus.BAD_REQUEST.value());
+        problemDetails.setType(ExceptionMessages.TYPE_EXCEPTION);
+        problemDetails.setDetail(exception.getMessage());
+        return problemDetails;
+    }
 
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

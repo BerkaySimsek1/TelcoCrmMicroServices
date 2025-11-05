@@ -21,7 +21,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         baseSecurityService.configureCoreSecurity(http);
 
-        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated()
                 );
