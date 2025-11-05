@@ -3,6 +3,7 @@ package com.etiya.customerservice.service.concretes;
 import com.etiya.common.crosscuttingconcerns.exceptions.types.BusinessException;
 import com.etiya.common.events.*;
 import com.etiya.customerservice.domain.entities.ContactMedium;
+import com.etiya.customerservice.domain.entities.Customer;
 import com.etiya.customerservice.repository.ContactMediumRepository;
 import com.etiya.customerservice.service.abstracts.ContactMediumService;
 import com.etiya.customerservice.service.mappings.ContactMediumMapper;
@@ -14,6 +15,7 @@ import com.etiya.customerservice.transport.kafka.producer.customer.CreateContact
 import com.etiya.customerservice.transport.kafka.producer.customer.DeleteContactMediumProducer;
 import com.etiya.customerservice.transport.kafka.producer.customer.SoftDeleteContactMediumProducer;
 import com.etiya.customerservice.transport.kafka.producer.customer.UpdateContactMediumProducer;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -145,20 +147,64 @@ public class ContactMediumServiceImpl implements ContactMediumService {
     }
 
     @Override
+    @Transactional
     public UpdatedContactMediumListResponse updateAsList(UpdateContactMediumListRequest request) {
         List<UpdatedContactMediumResponse> updatedList = new ArrayList<>();
 
         for (UpdateContactMediumItem item : request.getContactMediums()) {
 
-            ContactMedium existing = contactMediumRepository.findById(item.getId())
-                    .orElseThrow(() -> new RuntimeException("Contact Medium with ID " + item.getId() + " not found"));
+            ContactMedium existing;
 
-            // Eğer customerId uyuşmuyorsa hata fırlat (güvenlik için)
-            if (!existing.getCustomer().getId().equals(request.getCustomerId())) {
-                throw new RuntimeException("Customer ID mismatch for contact medium id " + item.getId());
+            if (item.getId() != null) {
+                // --- MEVCUT GÜNCELLEME YOLU (AYNEN KALSIN) ---
+                existing = contactMediumRepository.findById(item.getId())
+                        .orElseThrow(() -> new RuntimeException("Contact Medium with ID " + item.getId() + " not found"));
+
+                if (!existing.getCustomer().getId().equals(request.getCustomerId())) {
+                    throw new RuntimeException("Customer ID mismatch for contact medium id " + item.getId());
+                }
+
+            } else {
+                // --- MINIMAL UPSERT EKİ ---
+                existing = contactMediumRepository
+                        .findByCustomerIdAndTypeIgnoreCase(request.getCustomerId(), item.getType())
+                        .orElse(null);
+
+                if (existing == null) {
+                    // kayıt yoksa: küçük bir create (addAsList’i çağırmadan, inline)
+                    ContactMedium cm = new ContactMedium();
+                    // müşteri referansı: lazy referans yeterli
+                    Customer customerRef = new Customer();
+                    customerRef.setId(request.getCustomerId());
+                    cm.setCustomer(customerRef);
+                    cm.setType(item.getType());
+                    cm.setValue(item.getValue());
+                    cm.setPrimary(item.isPrimary());
+
+                    // varsa mevcut primary kuralını yine işletelim
+                    contactMediumBusinessRules.checkPrimaryStatus(request.getCustomerId(), item.isPrimary());
+
+                    ContactMedium created = contactMediumRepository.save(cm);
+
+                    // created event (mevcut producer’ını kullan)
+                    createContactMediumProducer.produceContactMediumCreated(
+                            new CreateContactMediumEvent(
+                                    created.getCustomer().getId().toString(),
+                                    created.getId(),
+                                    created.getType(),
+                                    created.getValue(),
+                                    created.isPrimary()
+                            )
+                    );
+
+                    updatedList.add(ContactMediumMapper.INSTANCE.updatedContactMediumResponseFromContactMedium(created));
+                    // bu item tamam; sonraki item’a geç
+                    continue;
+                }
+                // buradan sonra "existing" var → aşağıdaki update path’e düşecek
             }
 
-            // Mevcut mapper'ı kullanarak alanları güncelle
+            // --- MEVCUT MAPPER + SAVE (AYNEN KALSIN) ---
             ContactMediumMapper.INSTANCE.contactMediumFromUpdateRequest(
                     new UpdateContactMediumRequest(
                             request.getCustomerId(),
@@ -168,22 +214,26 @@ public class ContactMediumServiceImpl implements ContactMediumService {
                     ),
                     existing
             );
+
             ContactMedium saved = contactMediumRepository.save(existing);
 
-            UpdateContactMediumEvent event = new UpdateContactMediumEvent(
-                    saved.getCustomer().getId().toString(),
-                    saved.getId(),
-                    saved.getType(),
-                    saved.getValue(),
-                    saved.isPrimary()
+            // update event (aynen)
+            updateContactMediumProducer.produceContactMediumUpdated(
+                    new UpdateContactMediumEvent(
+                            saved.getCustomer().getId().toString(),
+                            saved.getId(),
+                            saved.getType(),
+                            saved.getValue(),
+                            saved.isPrimary()
+                    )
             );
-            updateContactMediumProducer.produceContactMediumUpdated(event);
 
             updatedList.add(ContactMediumMapper.INSTANCE.updatedContactMediumResponseFromContactMedium(saved));
         }
 
         return new UpdatedContactMediumListResponse(request.getCustomerId(), updatedList);
     }
+
 
     @Override
     public void delete(int id) {

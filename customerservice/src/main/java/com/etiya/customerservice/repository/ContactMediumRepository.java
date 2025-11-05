@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ContactMediumRepository extends JpaRepository<ContactMedium, Integer> {
@@ -33,4 +34,5 @@ public interface ContactMediumRepository extends JpaRepository<ContactMedium, In
 
     List<ContactMedium> findAllByCustomerId(UUID customerId);
 
+    Optional<ContactMedium> findByCustomerIdAndTypeIgnoreCase(UUID customerId, String type);
 }

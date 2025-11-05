@@ -16,7 +16,6 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class UpdateContactMediumItem {
 
-    @NotNull(message = "ContactMedium id cannot be null")
     private Integer id;
 
     @NotBlank(message = Messages.ContactMediumTypeNotBlank)
