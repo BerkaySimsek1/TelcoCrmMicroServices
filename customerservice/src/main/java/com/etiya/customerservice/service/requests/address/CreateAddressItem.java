@@ -1,14 +1,21 @@
 package com.etiya.customerservice.service.requests.address;
 
+import com.etiya.customerservice.service.messages.Messages;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class CreateAddressItem {
+    @NotBlank(message = Messages.AddressTitleNotBlank)
     private String title;
+    @NotBlank(message = Messages.AddressStreetNotBlank)
     private String street;
+    @NotBlank(message = Messages.AddressHouseNumberNotBlank)
     private String houseNumber;
+    @Size(max = 250, message = Messages.AddressDescriptionSize)
     private String description;
     private int districtId;
     private boolean isDefault;

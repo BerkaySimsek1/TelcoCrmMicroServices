@@ -44,9 +44,8 @@ public class BillingAccount extends BaseEntity {
     @PrePersist
     public void generateAccountNumber() {
         if (this.accountNumber == null || this.accountNumber.isEmpty()) {
-            int year = LocalDate.now().getYear();
             int sequence = new java.util.Random().nextInt(1000000);
-            this.accountNumber = String.format("BA-%d-%06d", year, sequence);
+            this.accountNumber = String.format("%06d", sequence);
         }
     }
 }

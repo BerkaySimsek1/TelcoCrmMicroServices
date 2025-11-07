@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CreateAddressRequest {
 
-    @NotBlank(message = "Title cannot be blank")
+    @NotBlank(message = Messages.AddressTitleNotBlank)
     private String title;
 
     @NotBlank(message = Messages.AddressStreetNotBlank)

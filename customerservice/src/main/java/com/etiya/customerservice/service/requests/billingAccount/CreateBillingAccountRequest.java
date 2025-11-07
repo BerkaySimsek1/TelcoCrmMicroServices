@@ -1,10 +1,7 @@
 package com.etiya.customerservice.service.requests.billingAccount;
 
 import com.etiya.customerservice.service.messages.Messages;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -23,12 +20,12 @@ public class CreateBillingAccountRequest {
     @Positive(message = Messages.BillingAccountAddressIdPositive)
     private Integer addressId;
 
-    @Length(min = 3, max = 100, message = Messages.BillingAccountAccountNumberLength)
-    @Pattern(regexp = "^[\\p{L}\\p{Nd} -]+$", message = Messages.BillingAccountAccountNumberPattern)
+    @Size(min = 6, max = 6, message = Messages.BillingAccountAccountNumberLength)
+    @Pattern(regexp = "^[0-9]{6}$", message = Messages.BillingAccountAccountNumberPattern)
     private String accountNumber;
 
     @NotBlank(message = Messages.BillingAccountAccountNameNotBlank)
-    @Length(min = 3, max = 100, message = Messages.BillingAccountAccountNameLength)
+    @Length(min = 3, max = 50, message = Messages.BillingAccountAccountNameLength)
     @Pattern(regexp = "^[\\p{L}\\p{Nd} -]+$", message= Messages.BillingAccountAccountNamePattern)
     private String accountName;
 }

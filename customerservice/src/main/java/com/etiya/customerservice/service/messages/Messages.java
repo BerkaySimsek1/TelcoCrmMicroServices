@@ -25,6 +25,7 @@ public class Messages {
     // ======================
     // Address Validations
     // ======================
+    public static final String AddressTitleNotBlank = "AddressTitleNotBlank";
     public static final String AddressStreetNotBlank = "AddressStreetNotBlank";
     public static final String AddressHouseNumberNotBlank = "AddressHouseNumberNotBlank";
     public static final String AddressDescriptionSize = "AddressDescriptionSize";
@@ -79,7 +80,14 @@ public class Messages {
     // ======================
     public static final String IndividualCustomerFirstNameNotBlank = "IndividualCustomerFirstNameNotBlank";
     public static final String IndividualCustomerFirstNameLength = "IndividualCustomerFirstNameLength";
+    public static final String IndividualCustomerMiddleNameLength = "IndividualCustomerMiddleNameLength";
+    public static final String IndividualCustomerLastNameLength = "IndividualCustomerLastNameLength";
     public static final String IndividualCustomerNationalIdNotBlank = "IndividualCustomerNationalIdNotBlank";
     public static final String IndividualCustomerNationalIdLength = "IndividualCustomerNationalIdLength";
     public static final String IndividualCustomerNationalIdPattern = "IndividualCustomerNationalIdPattern";
+    public static final String DateOfBirthNotNull = "DateOfBirthNotNull";
+    public static final String DateOfBirthCannotBeInFuture = "DateOfBirthCannotBeInFuture";
+    public static final String GenderNotNull = "GenderNotNull";
+    public static final String IndividualCustomerMotherNameLength = "IndividualCustomerMotherNameLength";
+    public static final String IndividualCustomerFatherNameLength = "IndividualCustomerFatherNameLength";
 }
